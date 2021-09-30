@@ -1,0 +1,97 @@
+{% extends "base_site.html" %}
+{% load static %}
+
+{% block head %}
+<style>
+    table{border: 1px;
+     cellpadding: 3px;
+     cellspacing: 0px;
+    }
+    tr{
+    border: 1px solid black;
+    text-align: center
+    }
+    tr.ligne-impaire{
+    background-color: rgb(0, 106, 77);
+    color : white
+    }
+    tr.ligne-paire{
+    background-color: rgb(240, 247, 240);
+    }
+    tr.ligne-paire:hover{
+    background-color: rgb(163, 204, 193)
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div >
+
+    <div style="flex-grow: 1; margin-top: 70px;">
+        <h4>Filtres</h4>
+        <form method="get" action="{% url 'Dej:ListUserView' %}">
+            <label style="margin-top: 20px">Equipe</label>
+
+            <select name="equipe_filter">
+                <option value="">--Please choose an option--</option>
+                {% for equipe in all_equipes %}
+                    <option>{{ equipe }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="submit" name="Filtrer" value="Filtrer"/></p>
+        </form>
+    </div>
+
+    <div style="margin-top: 70px;">
+        <h4>Utilisateurs</h4>
+        <table class="table table-bordered">
+            <tr class="ligne-impaire">
+                <td>Email</td>
+                <td>Username</td>
+                <td>Equipe</td>
+                <td>Nombre_points</td>
+            </tr>
+            <tr>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td><a href="{% url 'Dej:UserDetailView' user.email%}">{{user.email}}</a></td>
+                <td>{{user.username}}</td>
+                <td>{{user.equipe}}</td>
+                <td>{{user.nombre_points}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% if is_paginated %}
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+              <li class="disabled"><span>&laquo;</span></li>
+            {% endif %}
+            {% for i in paginator.page_range %}
+              {% if page_obj.number == i %}
+                <li class="active" style="margin-left:5px"><span> {{ i }} <span class="sr-only">(current)</span></span></li>
+              {% else %}
+                <li style="margin-left:5px"><a href="?page={{ i }}">  {{ i }}  </a></li>
+              {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+              <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+            {% else %}
+              <li class="disabled"><span>&raquo;</span></li>
+            {% endif %}
+          </ul>
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+
+
+{% endblock %}
