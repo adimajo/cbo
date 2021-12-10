@@ -25,6 +25,9 @@ from django.forms import ModelForm
 # from icalendar import vCalAddress, vText
 
 # ============================================
+LAST_UPDATE = "Last update"
+CREATION_DATE = "Creation date"
+NOMBRE_DE_POINTS = "Nombre de points"
 EQUIPE_CHOICES = (("MIG", "MIG"),
                   ("Validation", "Validation"),
                   ("GRO", "GRO"),
@@ -48,7 +51,7 @@ class User(AbstractUser):
     date_depart = models.DateField("Date de départ de MIG", blank=True, null=True)
     bio = models.TextField("Biographie", max_length=500, blank=True)
     specialite = models.CharField("Specialité", max_length=30, blank=True)
-    nombre_points = models.IntegerField("Nombre de points", null=True, blank=True)
+    nombre_points = models.IntegerField(NOMBRE_DE_POINTS, null=True, blank=True)
     equipe = models.CharField("Equipe", default="MIG", choices=EQUIPE_CHOICES, max_length=40)
 
     @property
@@ -74,8 +77,8 @@ class UserForm(ModelForm):
 
 
 class PetitDej(models.Model):
-    created_at = models.DateTimeField("Creation date", auto_now_add=True)
-    updated_at = models.DateTimeField("Last update", auto_now=True)
+    created_at = models.DateTimeField(CREATION_DATE, auto_now_add=True)
+    updated_at = models.DateTimeField(LAST_UPDATE, auto_now=True)
     date = models.DateTimeField("Date du petit dej")
     uri = models.URLField(default=_generate_unique_uri)
 
@@ -374,8 +377,8 @@ class PetitDejForm(ModelForm):
 
 
 class ResponsablePetitDej(models.Model):
-    created_at = models.DateTimeField("Creation date", auto_now_add=True)
-    updated_at = models.DateTimeField("Last update", auto_now=True)
+    created_at = models.DateTimeField(CREATION_DATE, auto_now_add=True)
+    updated_at = models.DateTimeField(LAST_UPDATE, auto_now=True)
     responsable = models.ForeignKey(User, on_delete=models.CASCADE, related_name="is_respo_of")
     petit_dej = models.ForeignKey(PetitDej, on_delete=models.CASCADE, related_name="respos")
     fait_maison = models.BooleanField("Fait maison?", default=False)
@@ -399,10 +402,10 @@ class ResponsablePetitDejForm(ModelForm):
 
 
 class DeltaPointUser(models.Model):
-    created_at = models.DateTimeField("Creation date", auto_now_add=True)
-    updated_at = models.DateTimeField("Last update", auto_now=True)
+    created_at = models.DateTimeField(CREATION_DATE, auto_now_add=True)
+    updated_at = models.DateTimeField(LAST_UPDATE, auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    points = models.IntegerField("Nombre de points", default=0)
+    points = models.IntegerField(NOMBRE_DE_POINTS, default=0)
 
 
 class DeltaPointUserForm(ModelForm):
@@ -415,9 +418,9 @@ class DeltaPointUserForm(ModelForm):
 
 
 class DeltaPoint(models.Model):
-    created_at = models.DateTimeField("Creation date", auto_now_add=True)
-    updated_at = models.DateTimeField("Last update", auto_now=True)
-    points = models.IntegerField("Nombre de points", default=0)
+    created_at = models.DateTimeField(CREATION_DATE, auto_now_add=True)
+    updated_at = models.DateTimeField(LAST_UPDATE, auto_now=True)
+    points = models.IntegerField(NOMBRE_DE_POINTS, default=0)
 
 
 class DeltaPointForm(ModelForm):

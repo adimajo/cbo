@@ -185,7 +185,7 @@ build CBO:
     entrypoint: [""]
   script:
     - . ./build.env
-    - cd whiteapp
+    - cd CBO
     - mkdir -p /kaniko/.docker
     - |-
        KANIKOPROXYBUILDARGS=""

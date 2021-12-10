@@ -28,6 +28,7 @@ from .utils import Calendar
 
 
 # ====================================== Variable init =================================================================
+LOGIN_ = '/login/'
 RESS2 = bokeh.resources.Resources('cdn')
 
 
@@ -49,7 +50,7 @@ def arg_is_yes(x):
 
 # ====================================== Classes def   =================================================================
 class IndexView(LoginRequiredMixin, TemplateView):
-    login_url = '/login/'
+    login_url = LOGIN_
     redirect_field_name = 'redirect_to'
     template_name = "home.html"
 
@@ -77,7 +78,7 @@ class PetitDejDelete(DeleteView):
 
 
 class ListUserView(LoginRequiredMixin, ListView):
-    login_url = '/login/'
+    login_url = LOGIN_
     redirect_field_name = 'redirect_to'
     template_name = "UserList.html"
     model = User
@@ -103,7 +104,7 @@ class ListUserView(LoginRequiredMixin, ListView):
 
 
 class UserDetailView(LoginRequiredMixin, TemplateView):
-    login_url = '/login/'
+    login_url = LOGIN_
     redirect_field_name = 'redirect_to'
     template_name = "UserDetailView.html"
 
@@ -117,7 +118,7 @@ class UserDetailView(LoginRequiredMixin, TemplateView):
 
 
 class NewPetitDejView(TemplateView, LoginRequiredMixin):
-    login_url = '/login/'
+    login_url = LOGIN_
     redirect_field_name = 'redirect_to'
     template_name = "PetitDejNew.html"
 
