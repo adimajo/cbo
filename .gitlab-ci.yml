@@ -1,0 +1,259 @@
+.common_python: &common_python
+  image:
+    name: docker-remote.registry.saas.cagip.group.gca/library/python:3.8-slim
+
+.ci_tools: &ci_tools
+  image:
+    name: layer-kraft.registry.saas.cagip.group.gca/ci-tools:latest
+
+.common_tag: &common_tag
+  tags:
+  - kubernetes
+
+.common_deploy: &common_deploy
+  before_script:
+    # Install ssh-agent if not already installed, it is required by Docker.
+    # (change apt-get to yum if you use a CentOS-based image)
+    - 'which ssh-agent || ( apk --update add openssh-client )'
+
+    # Run ssh-agent (inside the build environment)
+    - eval $(ssh-agent -s)
+
+    # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+    - echo "$BOOT_GITLAB_SSH_KEY" |  tr -d ' ' | base64 -d | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan gitlab.ca.cib >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - apk add --no-cache git
+    - git config --global user.name "$GITLAB_USER_NAME"
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+
+stages:
+  - lint
+  - test
+  - security
+  - versionning
+  - sonar_check
+  - document
+  - build
+  - deploy_dev
+  - promote_staging
+  - promote_stable
+
+lint:
+  stage: lint
+  <<: *common_python
+  <<: *common_tag
+  script:
+    - cd CBO
+    - pip install flake8
+    # stop the build if there are Python syntax errors or undefined names
+    - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+    - flake8 --ignore=W504 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+  only:
+    refs:
+      - branches
+    changes:
+      - .gitlab-ci.yml
+      - CBO/**/*
+
+test:
+  artifacts:
+    paths:
+      - coverage.xml
+  stage: test
+  <<: *common_python
+  <<: *common_tag
+  script:
+    - pip install pipenv==2021.5.29
+    - apt update
+    - apt -y install libpq-dev gcc
+    - export PIPENV_PIPFILE=CBO/Pipfile
+    - pipenv install -d
+    - pipenv run coverage run --source CBO/ -m pytest
+    - pipenv run coverage report
+    - pipenv run coverage xml
+  only:
+    refs:
+      - branches
+    changes:
+      - .gitlab-ci.yml
+      - CBO/**/*
+      - tests/**/*
+
+security:
+  stage: security
+  <<: *common_python
+  <<: *common_tag
+  script:
+  - pip install bandit
+  - bandit -r CBO
+  only:
+    refs:
+      - branches
+    changes:
+      - .gitlab-ci.yml
+      - CBO/**/*
+
+generate_tag:
+  artifacts:
+    paths:
+      - build.env
+      - CBO/Pipfile.lock
+  stage: versionning
+  <<: *common_python
+  <<: *common_tag
+  only:
+   - master
+  script:
+    - pip install pipenv==2021.5.29
+    - apt update
+    - apt -y install libpq-dev gcc
+    - PIPENV_PIPFILE=CBO/Pipfile pipenv install
+    - echo export APPLICATION_TAG_VERSION=`python -c 'import CBO; print(CBO.__version__)'` >> build.env
+
+quality_check:
+  stage: sonar_check
+  image:
+    name: docker-remote.registry.saas.cagip.group.gca/sonarsource/sonar-scanner-cli:4.6
+  <<: *common_tag
+  variables:
+    SONAR_TOKEN: "${BOOT_SONAR_TOKEN}"
+    SONAR_HOST_URL: "${BOOT_SONAR_INSTANCE}"
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
+    GIT_DEPTH: 0 # Tells git to fetch all the branches of the project, required by the analysis task
+    SONAR_SCANNER_OPTS: "-Djavax.net.ssl.trustStore=cacerts"
+  script:
+    - . ./build.env
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt
+    - apk --update add java-common
+    - keytool -import -alias mycert -file cacreditagricoleserver.crt -storetype jks -trustcacerts -noprompt -keypass keypass -keystore cacerts -storepass test@123
+    - sonar-scanner -Dsonar.exclusions=tests/**,docs/**,coverage.xml -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
+  only:
+   - master
+
+document:
+  stage: document
+  <<: *common_python
+  <<: *common_tag
+  script:
+    - . ./build.env
+    - pip install pipenv==2021.5.29
+    - apt update
+    - apt install -y make libpq-dev gcc git
+    - cd docs
+    - export PIPENV_PIPFILE=../CBO/Pipfile
+    - pipenv install -d --skip-lock
+    - pipenv run make clean
+    - pipenv run make html
+    - git config --global http.sslverify false
+    - git config --global user.name "$GITLAB_USER_NAME"
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+    - git clone https://$BOOT_GITLAB_SRV_ACCOUNT:$BOOT_GITLAB_CAGIP_TOKEN@$BOOT_GITLAB_DOCS_REPO docs_to_publish
+    - rm -rf docs_to_publish/public
+    - mkdir docs_to_publish/public
+    - cp -r build/html/* docs_to_publish/public/
+    - cd docs_to_publish
+    - git add -A
+    - |-
+        if ! git diff-index --quiet HEAD --; then
+            git commit -am "Rollout version $APPLICATION_TAG_VERSION"
+            git push
+        else
+            echo "Nothing to push"
+        fi
+  artifacts:
+    paths:
+      - docs/build/html
+    expire_in: 1 week
+  only:
+    refs:
+      - branches
+    changes:
+      - .gitlab-ci.yml
+      - CBO/**/*
+      - docs/**/*
+
+build CBO:
+  stage: build
+  <<: *common_tag
+  image:
+    name: docker-remote.registry.saas.cagip.group.gca/kaniko-project/executor:debug-v1.0.0
+    entrypoint: [""]
+  script:
+    - . ./build.env
+    - cd whiteapp
+    - mkdir -p /kaniko/.docker
+    - |-
+       KANIKOPROXYBUILDARGS=""
+       KANIKOCFG="{\"auths\":{\"https://$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY\":{\"auth\":\"$(echo -n $BOOT_ARTI_USER:$BOOT_ARTI_PASSWORD | base64 | tr -d '\n')\"}}}"
+       if [ "x${http_proxy}" != "x" -o "x${https_proxy}" != "x" ]; then
+         KANIKOCFG="${KANIKOCFG}, \"proxies\": { \"default\": { \"httpProxy\": \"${http_proxy}\", \"httpsProxy\": \"${https_proxy}\", \"noProxy\": \"${no_proxy}\"}}"
+         KANIKOPROXYBUILDARGS="--build-arg http_proxy=${http_proxy} --build-arg https_proxy=${https_proxy} --build-arg no_proxy=${no_proxy}"
+       fi
+       KANIKOCFG="${KANIKOCFG} }"
+       echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
+    - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
+    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg PASSWORD=$PASSWORD --build-arg NAME=$NAME --build-arg POSTGRES_MASTER_DB=$POSTGRES_MASTER_DB --build-arg POSTGRES_MASTER_USER=$POSTGRES_MASTER_USER --build-arg POSTGRES_MASTER_PASSWORD=$POSTGRES_MASTER_PASSWORD --build-arg POSTGRES_SCHEMA=$POSTGRES_SCHEMA --build-arg POSTGRES_PORT=$POSTGRES_PORT --build-arg POSTGRES_URL=$POSTGRES_URL --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+  only:
+    refs:
+      - master
+    changes:
+      - .gitlab-ci.yml
+      - CBO/**/*
+
+deploy_dev:
+  stage: deploy_dev
+  <<: *ci_tools
+  <<: *common_tag
+  <<: *common_deploy
+  script:
+    - . ./build.env
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - git clone $BOOT_GITLAB_DEPLOY_REPO yaml_deploy_folder
+    - cd yaml_deploy_folder/dev
+    - kustomize edit set image $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO=$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - |-
+        if ! git diff-index --quiet HEAD --; then
+            git commit -am "Rollout version $APPLICATION_TAG_VERSION"
+            git push
+        else
+            echo "Nothing to push"
+        fi
+  only:
+   - master
+
+promote_staging:
+  stage: promote_staging
+  when: manual
+  <<: *ci_tools
+  <<: *common_tag
+  variables:
+    CREDS: "${BOOT_ARTI_USER}:${BOOT_ARTI_PASSWORD}"
+    SOURCE_REPO: "${BOOT_ARTI_SCRATCH_REGISTRY}"
+    TARGET_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
+  script:
+    - . ./build.env
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - 'curl -S -k -u ${CREDS} -XPOST https://$BOOT_ARTI_REGISTRY/api/docker/$SOURCE_REPO/v2/promote -H "Content-Type: application/json" -d"{\"targetRepo\":\"${TARGET_REPO}\",\"dockerRepository\":\"${BOOT_ARTI_REPO}\",\"tag\":\"${APPLICATION_TAG_VERSION}\",\"copy\":true}"'
+  only:
+   - master
+
+promote_stable:
+  stage: promote_stable
+  when: manual
+  <<: *ci_tools
+  <<: *common_tag
+  variables:
+    SOURCE_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
+    TARGET_REPO: "${BOOT_ARTI_STABLE_REGISTRY}"
+    IMAGE: "${BOOT_ARTI_REPO}"
+  script:
+    - . ./build.env
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - docker-promote --tag=$APPLICATION_TAG_VERSION
+  only:
+   - master

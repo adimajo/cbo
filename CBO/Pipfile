@@ -1,0 +1,30 @@
+[[source]]
+name = "pypi"
+url = "https://registry.saas.cagip.group.gca/api/pypi/pypi-remote/simple"
+verify_ssl = false
+
+[dev-packages]
+pytest = "*"
+coverage = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+flake8 = "*"
+numpydoc = "*"
+bandit = "*"
+
+[packages]
+numpy = "*"
+pandas = ">=0.25.1"
+django = "*"
+django_import_export = "*"
+django-widget-tweaks = "*"
+django-cors-headers = "*"
+tqdm = "*"
+pywin32 = "*"
+docutils = "*"
+icalendar = "*"
+bokeh = "*"
+scikit-learn = "*"
+whitenoise = {version = "*", extras = ["brotli"], markers = "sys_platform == 'linux'"}
+gunicorn = {version = "*", extras = ["gevent"], markers = "sys_platform == 'linux'"}
+psycopg2-binary = "*"
