@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from loguru import logger
+from Dej.Print import MyPrinter
+
+logger = MyPrinter()
 
 SUPERUSER_ = 'Superuser '
 
