@@ -140,8 +140,7 @@ class NewPetitDejView(TemplateView, LoginRequiredMixin):
         return render(request, self.template_name, self.context)
 
     def post(self, request, *args, **kwargs):
-        self.context["csrf_token"] = django.middleware.csrf.get_token(request)
-        return render(request, self.template_name, self.context)
+        return self.get(request, *args, **kwargs)
 
 
 class NewPetitDejViewVue(TemplateView):

@@ -25,6 +25,7 @@ from django.forms import ModelForm
 # from icalendar import vCalAddress, vText
 
 # ============================================
+INFORMATIONS_G_N_RALES = "Informations générales"
 LAST_UPDATE = "Last update"
 CREATION_DATE = "Creation date"
 NOMBRE_DE_POINTS = "Nombre de points"
@@ -372,7 +373,7 @@ class PetitDejForm(ModelForm):
         model = PetitDej
         exclude = []
 
-    layout = {"Informations générales": ["date", "participation_validation"],
+    layout = {INFORMATIONS_G_N_RALES: ["date", "participation_validation"],
               "Absents": ["absents"]}
 
 
@@ -397,7 +398,7 @@ class ResponsablePetitDejForm(ModelForm):
         model = ResponsablePetitDej
         exclude = ["already_saved"]
 
-    layout = {"Informations générales": ["responsable", "petit_dej"],
+    layout = {INFORMATIONS_G_N_RALES: ["responsable", "petit_dej"],
               "Bonus": ["fait_maison"]}
 
 
@@ -413,7 +414,7 @@ class DeltaPointUserForm(ModelForm):
         model = DeltaPointUser
         exclude = []
 
-    layout = {"Informations générales": ["user", "points"],
+    layout = {INFORMATIONS_G_N_RALES: ["user", "points"],
               }
 
 
@@ -428,5 +429,5 @@ class DeltaPointForm(ModelForm):
         model = DeltaPoint
         exclude = []
 
-    layout = {"Informations générales": ["points"],
+    layout = {INFORMATIONS_G_N_RALES: ["points"],
               }
