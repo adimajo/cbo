@@ -7,22 +7,22 @@ models module
 # Dates
 import datetime
 # OS
-import os
-import tempfile
-from datetime import timedelta
+# import os
+# import tempfile
+# from datetime import timedelta
 from uuid import uuid4
 
 import numpy as np
 import pandas as pd
-import pythoncom
-import win32com.client as win32
+# import pythoncom
+# import win32com.client as win32
 from django.contrib.auth.models import AbstractUser
 # Package Django
 from django.db import models
 from django.forms import ModelForm
 # ICS
-from icalendar import Calendar, Event, Alarm
-from icalendar import vCalAddress, vText
+# from icalendar import Calendar, Event, Alarm
+# from icalendar import vCalAddress, vText
 
 # ============================================
 EQUIPE_CHOICES = (("MIG", "MIG"),
@@ -215,153 +215,153 @@ class PetitDej(models.Model):
     def send_mail(self,
                   auto=False,
                   ):
-
-        # Recuperation des liste d'organisateurs et de participants
-        organisateurs = self.organisateurs
-        participants = self.participants
-        nb_participants_par_orga = int(len(participants) / len(organisateurs))
-
-        scores = [{"name": x.username, "points": x.nombre_points} for x in self.possible_users]
-        scores = sorted(scores, key=lambda x: x["points"])
-
-        premier_quart = scores[:int(len(scores) / 4)]
-        dernier_quart = scores[int(3 * len(scores) / 4):]
-
-        tableau_scores_up = "\n\t- ".join(["{}".format(x["name"]) for x in premier_quart])
-        tableau_scores_down = "\n\t- ".join(["{}".format(x["name"]) for x in dernier_quart])
-
-        date_str = self.date.strftime(("%d/%m/%Y à %I:%M%p"))
-        subject = "Petit déjeuner du {}".format(date_str)
-
-        body_organ = "Bonjour, " \
-                     "\n\nVous avez été désignés comme organisateurs du petit-déjeuner qui aura lieu le {}.\n\n" \
-                     "" \
-                     "Le nombre de participants attendus par organisateur est de {}.\n\n" \
-                     "" \
-                     "Si vous avez la possibilité de préparer des plats maison, vous obtiendrez des points bonus!\n\n" \
-                     "Bien cordialement\n\n" \
-                     "" \
-                     "Nicolas DAMAY - CBO".format(date_str, nb_participants_par_orga)
-
-        body_participant = "Bonjour, " \
-                           "\n\nVous etes conviés au petit-déjeuner qui aura lieu le {}.\n\n" \
-                           "" \
-                           "Pour information, les organisateurs désignés sont :\n\t- {}\n\n" \
-                           "Le tableau des scores devient:\n\n" \
-                           "Peu de points : \n\t- {}\n\n" \
-                           "Nombreux points : \n\t- {}\n\n" \
-                           "Nicolas DAMAY - CBO".format(date_str,
-                                                        "\n\t- ".join([x.username for x in organisateurs]),
-                                                        tableau_scores_up,
-                                                        tableau_scores_down
-                                                        )
-
-        # Init de OutLook
-        pythoncom.CoInitialize()
-        outlook = win32.Dispatch('Outlook.Application')
-
-        # 1) Mail pour les responsables
-        mail = outlook.CreateItem(0)
-        mail.To = ";".join([x.email for x in organisateurs])
-        mail.CC = ""
-        mail.BCC = ""
-        mail.Subject = subject
-        mail.Body = body_organ
-
-        # Générer le fichier .ical
-        temp = tempfile.NamedTemporaryFile()
-        with open(temp.name + ".ics", 'wb') as f:
-            cal = Calendar()
-            event = Event()
-            event.add('summary', subject)
-            event.add('dtstart', self.date)
-            event.add('dtend', self.date + timedelta(seconds=1800))
-
-            organizer = vCalAddress('MAILTO:nicolas.damay@credit-agricole-sa.fr')
-            organizer.params['cn'] = vText('Nicolas DAMAY')
-            organizer.params['role'] = vText('CHAIR')
-            event['organizer'] = organizer
-            event['location'] = vText('Forum')
-            event.add('priority', 5)
-
-            for participant in organisateurs:
-                attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
-                attendee.params['ROLE'] = vText('REQ-PARTICIPANT')
-                event.add('attendee', attendee, encode=0)
-
-            for participant in participants:
-                attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
-                attendee.params['ROLE'] = vText('OPT-PARTICIPANT')
-                event.add('attendee', attendee, encode=0)
-
-            alarm = Alarm()
-            alarm.add('trigger', timedelta(days=-2))
-            alarm.add('action', 'display')
-            alarm.add('description', "Plus que deux jours pour préparer des petits plats")
-            event.add_component(alarm)
-
-            alarm = Alarm()
-            alarm.add('trigger', timedelta(days=-1))
-            alarm.add('action', 'display')
-            alarm.add('description', "Le petit déjeuner aura lieu demain")
-            event.add_component(alarm)
-
-            cal.add_component(event)
-            f.write(cal.to_ical())
-        mail.Attachments.Add(temp.name + ".ics")
-        if auto:
-            mail.Send()
-        else:
-            mail.save()
-            mail.Display(True)
-        os.remove(temp.name + ".ics")
-
-        # 2) Mail pour les participants
-        mail = outlook.CreateItem(0)
-        mail.To = ";".join([x.email for x in participants])
-        mail.CC = ""
-        mail.BCC = ""
-        mail.Subject = subject
-        mail.Body = body_participant
-
-        # Générer le fichier .ical
-        temp = tempfile.NamedTemporaryFile()
-        with open(temp.name + ".ics", 'wb') as f:
-            cal = Calendar()
-            event = Event()
-            event.add('summary', subject)
-            event.add('dtstart', self.date)
-            event.add('dtend', self.date + timedelta(seconds=1800))
-
-            organizer = vCalAddress('MAILTO:nicolas.damay@credit-agricole-sa.fr')
-            organizer.params['cn'] = vText('Nicolas DAMAY')
-            organizer.params['role'] = vText('CHAIR')
-            event['organizer'] = organizer
-            event['location'] = vText('Forum')
-            event.add('priority', 5)
-
-            for participant in organisateurs:
-                attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
-                attendee.params['ROLE'] = vText('REQ-PARTICIPANT')
-                event.add('attendee', attendee, encode=0)
-
-            for participant in participants:
-                attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
-                attendee.params['ROLE'] = vText('OPT-PARTICIPANT')
-                event.add('attendee', attendee, encode=0)
-            cal.add_component(event)
-            f.write(cal.to_ical())
-        mail.Attachments.Add(temp.name + ".ics")
-        if auto:
-            mail.Send()
-        else:
-            mail.save()
-            mail.Display(True)
-        os.remove(temp.name + ".ics")
+        print("email not implemented on Kube")
+        # # Recuperation des liste d'organisateurs et de participants
+        # organisateurs = self.organisateurs
+        # participants = self.participants
+        # nb_participants_par_orga = int(len(participants) / len(organisateurs))
+        #
+        # scores = [{"name": x.username, "points": x.nombre_points} for x in self.possible_users]
+        # scores = sorted(scores, key=lambda x: x["points"])
+        #
+        # premier_quart = scores[:int(len(scores) / 4)]
+        # dernier_quart = scores[int(3 * len(scores) / 4):]
+        #
+        # tableau_scores_up = "\n\t- ".join(["{}".format(x["name"]) for x in premier_quart])
+        # tableau_scores_down = "\n\t- ".join(["{}".format(x["name"]) for x in dernier_quart])
+        #
+        # date_str = self.date.strftime(("%d/%m/%Y à %I:%M%p"))
+        # subject = "Petit déjeuner du {}".format(date_str)
+        #
+        # body_organ = "Bonjour, " \
+        #              "\n\nVous avez été désignés comme organisateurs du petit-déjeuner qui aura lieu le {}.\n\n" \
+        #              "" \
+        #              "Le nombre de participants attendus par organisateur est de {}.\n\n" \
+        #              "" \
+        #              "Si vous avez la possibilité de préparer des plats maison, vous obtiendrez des points bonus!\n\n" \
+        #              "Bien cordialement\n\n" \
+        #              "" \
+        #              "Nicolas DAMAY - CBO".format(date_str, nb_participants_par_orga)
+        #
+        # body_participant = "Bonjour, " \
+        #                    "\n\nVous etes conviés au petit-déjeuner qui aura lieu le {}.\n\n" \
+        #                    "" \
+        #                    "Pour information, les organisateurs désignés sont :\n\t- {}\n\n" \
+        #                    "Le tableau des scores devient:\n\n" \
+        #                    "Peu de points : \n\t- {}\n\n" \
+        #                    "Nombreux points : \n\t- {}\n\n" \
+        #                    "Nicolas DAMAY - CBO".format(date_str,
+        #                                                 "\n\t- ".join([x.username for x in organisateurs]),
+        #                                                 tableau_scores_up,
+        #                                                 tableau_scores_down
+        #                                                 )
+        #
+        # # Init de OutLook
+        # pythoncom.CoInitialize()
+        # outlook = win32.Dispatch('Outlook.Application')
+        #
+        # # 1) Mail pour les responsables
+        # mail = outlook.CreateItem(0)
+        # mail.To = ";".join([x.email for x in organisateurs])
+        # mail.CC = ""
+        # mail.BCC = ""
+        # mail.Subject = subject
+        # mail.Body = body_organ
+        #
+        # # Générer le fichier .ical
+        # temp = tempfile.NamedTemporaryFile()
+        # with open(temp.name + ".ics", 'wb') as f:
+        #     cal = Calendar()
+        #     event = Event()
+        #     event.add('summary', subject)
+        #     event.add('dtstart', self.date)
+        #     event.add('dtend', self.date + timedelta(seconds=1800))
+        #
+        #     organizer = vCalAddress('MAILTO:nicolas.damay@credit-agricole-sa.fr')
+        #     organizer.params['cn'] = vText('Nicolas DAMAY')
+        #     organizer.params['role'] = vText('CHAIR')
+        #     event['organizer'] = organizer
+        #     event['location'] = vText('Forum')
+        #     event.add('priority', 5)
+        #
+        #     for participant in organisateurs:
+        #         attendee = vCalAddress('MAILTO:{}'.format(participant.email))
+        #         attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+        #         attendee.params['ROLE'] = vText('REQ-PARTICIPANT')
+        #         event.add('attendee', attendee, encode=0)
+        #
+        #     for participant in participants:
+        #         attendee = vCalAddress('MAILTO:{}'.format(participant.email))
+        #         attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+        #         attendee.params['ROLE'] = vText('OPT-PARTICIPANT')
+        #         event.add('attendee', attendee, encode=0)
+        #
+        #     alarm = Alarm()
+        #     alarm.add('trigger', timedelta(days=-2))
+        #     alarm.add('action', 'display')
+        #     alarm.add('description', "Plus que deux jours pour préparer des petits plats")
+        #     event.add_component(alarm)
+        #
+        #     alarm = Alarm()
+        #     alarm.add('trigger', timedelta(days=-1))
+        #     alarm.add('action', 'display')
+        #     alarm.add('description', "Le petit déjeuner aura lieu demain")
+        #     event.add_component(alarm)
+        #
+        #     cal.add_component(event)
+        #     f.write(cal.to_ical())
+        # mail.Attachments.Add(temp.name + ".ics")
+        # if auto:
+        #     mail.Send()
+        # else:
+        #     mail.save()
+        #     mail.Display(True)
+        # os.remove(temp.name + ".ics")
+        #
+        # # 2) Mail pour les participants
+        # mail = outlook.CreateItem(0)
+        # mail.To = ";".join([x.email for x in participants])
+        # mail.CC = ""
+        # mail.BCC = ""
+        # mail.Subject = subject
+        # mail.Body = body_participant
+        #
+        # # Générer le fichier .ical
+        # temp = tempfile.NamedTemporaryFile()
+        # with open(temp.name + ".ics", 'wb') as f:
+        #     cal = Calendar()
+        #     event = Event()
+        #     event.add('summary', subject)
+        #     event.add('dtstart', self.date)
+        #     event.add('dtend', self.date + timedelta(seconds=1800))
+        #
+        #     organizer = vCalAddress('MAILTO:nicolas.damay@credit-agricole-sa.fr')
+        #     organizer.params['cn'] = vText('Nicolas DAMAY')
+        #     organizer.params['role'] = vText('CHAIR')
+        #     event['organizer'] = organizer
+        #     event['location'] = vText('Forum')
+        #     event.add('priority', 5)
+        #
+        #     for participant in organisateurs:
+        #         attendee = vCalAddress('MAILTO:{}'.format(participant.email))
+        #         attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+        #         attendee.params['ROLE'] = vText('REQ-PARTICIPANT')
+        #         event.add('attendee', attendee, encode=0)
+        #
+        #     for participant in participants:
+        #         attendee = vCalAddress('MAILTO:{}'.format(participant.email))
+        #         attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+        #         attendee.params['ROLE'] = vText('OPT-PARTICIPANT')
+        #         event.add('attendee', attendee, encode=0)
+        #     cal.add_component(event)
+        #     f.write(cal.to_ical())
+        # mail.Attachments.Add(temp.name + ".ics")
+        # if auto:
+        #     mail.Send()
+        # else:
+        #     mail.save()
+        #     mail.Display(True)
+        # os.remove(temp.name + ".ics")
 
 
 class PetitDejForm(ModelForm):
