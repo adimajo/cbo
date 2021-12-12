@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/my_style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/my_collapsible.css' %}" />
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+
+    <style>
+    /* The switch - the box around the slider */
+    .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    }
+
+    /* The slider */
+    .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+    }
+
+    .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    }
+
+    input:checked + .slider {
+    background-color: #006A4E;
+    }
+
+    input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+    border-radius: 34px;
+    }
+
+    .slider.round:before {
+    border-radius: 50%;
+    }
+
+    </style>
+    <style>
+       label {
+           color: #555;
+           display: inline-block;
+           margin-left: 18px;
+           padding-top: 0px;
+           font-size: 14px;
+       }
+
+      input {
+           font-family: "Helvetica Neue", Helvetica, sans-serif;
+           font-size: 12px;
+           outline: none;
+       }
+       input[type=checkbox] {
+           margin-left: 20px;
+           margin-top: 0px;
+       }
+
+
+       .my_button {
+            font: bold 11px Arial;
+            text-decoration: none;
+            background-color: #EEEEEE;
+            color: #333333;
+            padding: 2px 6px 2px 6px;
+            border-top: 1px solid #CCCCCC;
+            border-right: 1px solid #333333;
+            border-bottom: 1px solid #333333;
+            border-left: 1px solid #CCCCCC;
+            border-radius: 30px;
+            float: center;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .5);
+            cursor: pointer;
+       }
+       .my_button:hover {
+           background-image: -webkit-gradient(linear, left top, left bottom, from(#b6e2ff), to(#6ec2e8));
+           background-image: -moz-linear-gradient(top left 90deg, #b6e2ff 0%, #6ec2e8 100%);
+           background-image: linear-gradient(top left 90deg, #b6e2ff 0%, #6ec2e8 100%);
+       }
+       .my_button:active {
+           background-image: -webkit-gradient(linear, left top, left bottom, from(#6ec2e8), to(#b6e2ff));
+           background-image: -moz-linear-gradient(top left 90deg, #6ec2e8 0%, #b6e2ff 100%);
+           background-image: linear-gradient(top left 90deg, #6ec2e8 0%, #b6e2ff 100%);
+       }
+
+    }
+
+
+
+    </style>
+
+
+    {% block head %}
+    {% endblock %}
+    {% block name %}
+        <title>
+            Petit déj, by CBO
+        </title>
+    {% endblock %}
+    </head>
+    <body>
+        <div class="background">
+            <header>
+                <div class="titles">
+                    <div class="title">
+                        {% load static %}
+                        <!-- <p> <a href="https://www.credit-agricole.com/"><img src="{% static 'gca.png' %}" alt="gca" height="100px"/></a>   </p> -->
+                        <p> <a href="https://www.credit-agricole.com/"><img src="https://www.credit-agricole.com/var/storage/images/1406828-1402-fre-FR/Accueil.png" alt="gca" height="100px"/></a>   </p>
+
+
+                        <p class="blank"> ~~ </p>
+                        <h1> {% block title %} Petit déj, by CBO.{% endblock %}</h1>
+                    </div>
+                    <p class="subtitle">
+                        {% block subtitle %}
+                        {% endblock %}
+                    </p>
+                </div>
+
+                <div class="user">
+                    {% if user.is_authenticated %}
+                    <p> Connecté en tant que <span class="username"> {{ user.username }} </span> </p>
+                    <p class="sep"> • </p>
+                 
+                    <a href="{% url 'logout'%}">
+                        <p> Se déconnecter </p>
+                    </a>
+                    {% else %}
+                        <a href="{% url 'login'%}">
+                            <p> Se connecter </p>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </header>
+        
+            <div class="tabs">
+                {% block tabs %}
+                <div class="foot_element">
+                    <p>
+                        <a href="{% url 'home' %}">
+                            Accueil
+                        </a>
+                        <a class="clair" href="{% url 'Dej:ListUserView' %}">
+                            Users
+                        </a>
+
+                        <a class="clair" href="{% url 'Dej:NewPetitDejView' %}">
+                            Nouveau Petit-Dej
+                        </a>
+                        <a class="clair" href="{% url 'admin:index' %}">
+                            Administrateur
+                        </a>
+                    </p>
+                </div>
+                {% endblock %}
+            </div>
+
+            <div id="main">
+                {% block content %}
+                <div class="part">
+                    <h2> Content </h2>
+                    <p> Your text here </p>
+                </div>
+                {% endblock %}
+            </div>
+
+
+
+            <footer>
+                {% block footer %}
+                <div class="foot_element">
+                    <h5> Contact </h5>
+                    <p> <a class="clair" href="mailto:Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr">GROrporate</a> </p>
+                </div>
+                <div class="foot_element">
+                    <h5> About </h5>
+                    <p> Website Django/CSS3/HTML5 </p>
+                </div>
+                {% endblock %}
+            </footer>
+        </div>
+    </body>
+</html>
