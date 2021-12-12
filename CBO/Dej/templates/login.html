@@ -27,9 +27,9 @@
 
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        <table>
+        <table aria-describedby="login">
         <tr>
-            <td>{{ form.username.label_tag }}</td>
+            <th scope="col">{{ form.username.label_tag }}</th>
             <td>{{ form.username }}</td>
         </tr>
         <tr>

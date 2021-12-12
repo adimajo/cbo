@@ -54,7 +54,12 @@ class IndexView(LoginRequiredMixin, TemplateView):
     redirect_field_name = 'redirect_to'
     template_name = "home.html"
 
+    def __init__(self, *args, **kwargs):
+        super(TemplateView, self).__init__(*args, **kwargs)
+        self.context = {}
+
     def get(self, request, *args, **kwargs):
+        self.context["csrf_token"] = django.middleware.csrf.get_token(request)
         return render(request, 'home.html', {})
 
 
@@ -140,6 +145,7 @@ class NewPetitDejView(TemplateView, LoginRequiredMixin):
         return render(request, self.template_name, self.context)
 
     def post(self, request, *args, **kwargs):
+        self.context["csrf_token"] = django.middleware.csrf.get_token(request)
         return self.get(request, *args, **kwargs)
 
 
