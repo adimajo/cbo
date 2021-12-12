@@ -15,20 +15,21 @@ logger.setLevel(LEVEL)
 formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
 
 # add Redirection Steam
-steam_handler = logging.StreamHandler()
-steam_handler.setLevel(LEVEL)
-steam_handler.setFormatter(formatter)
-logger.addHandler(steam_handler)
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(LEVEL)
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
 
 
 class MyPrinter(object):
 
-    def __init__(self, path_log):
-        # Redirection fichier
-        file_handler = RotatingFileHandler(path_log, 'a', 1000000, 1)
-        file_handler.setLevel(LEVEL)
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
+    def __init__(self, path_log=None):
+        if path_log is not None:
+            # Redirection fichier
+            file_handler = RotatingFileHandler(path_log, 'a', 1000000, 1)
+            file_handler.setLevel(LEVEL)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
 
     @staticmethod
     def info(msg, importance=0, tab=0):
