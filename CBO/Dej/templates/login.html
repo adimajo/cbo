@@ -7,13 +7,13 @@
 {% endblock %}
 
 {% block title %}
-    Connection
+    Connexion
 {% endblock %}
 
 {% block content %}
 
     {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
+        {{ form.errors }}
     {% endif %}
 
     {% if next %}
@@ -27,18 +27,18 @@
 
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        <table aria-describedby="login">
-        <tr>
-            <th scope="col">{{ form.username.label_tag }}</th>
-            <td>{{ form.username }}</td>
+        <table aria-describedby="Login">
+        <tr style="background-color:#f8f9fa00;">
+            <th id="tag">{{ form.username.label_tag }}</th>
+            <th id="username">{{ form.username }}</th>
         </tr>
-        <tr>
+        <tr style="background-color:#f8f9fa00;">
             <td>{{ form.password.label_tag }}</td>
             <td>{{ form.password }}</td>
         </tr>
         </table>
 
-        <input type="submit" value="login" />
+        <input type="submit" style="width:30%;" value="SE CONNECTER" />
         <input type="hidden" name="next" value="{{ next }}" />
     </form>
 
