@@ -57,6 +57,9 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://*.k8s.caas.ca-sa.gca',
+                        'http://*.k8s.caas.ca-sa.gca']
+
 ROOT_URLCONF = 'DjangoSite.urls'
 
 TEMPLATES = [
