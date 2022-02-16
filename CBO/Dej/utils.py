@@ -3,7 +3,7 @@ utils module
 """
 from calendar import HTMLCalendar
 
-from .models import PetitDej
+from Dej.models import PetitDej
 
 
 class Calendar(HTMLCalendar):
@@ -24,7 +24,7 @@ class Calendar(HTMLCalendar):
         return '<td></td>'
 
     # formats a week as a tr
-    def formatweek(self, theweek, events):
+    def formatweek(self, theweek, events=None):
         week = ''
         for d, weekday in theweek:
             week += self.formatday(d, events)

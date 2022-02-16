@@ -5,11 +5,11 @@ admin module
 # ============================ Import statements============================================
 from django.contrib import admin
 
-from .models import DeltaPoint, DeltaPointForm
-from .models import DeltaPointUser, DeltaPointUserForm
-from .models import PetitDej, PetitDejForm
-from .models import ResponsablePetitDej, ResponsablePetitDejForm
-from .models import User, UserForm
+from Dej.models import DeltaPoint, DeltaPointForm
+from Dej.models import DeltaPointUser, DeltaPointUserForm
+from Dej.models import PetitDej, PetitDejForm
+from Dej.models import ResponsablePetitDej, ResponsablePetitDejForm
+from Dej.models import User, UserForm
 
 
 class ResponsablePetitDejAdmin(admin.TabularInline):

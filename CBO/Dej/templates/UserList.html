@@ -46,13 +46,13 @@
 
     <div style="margin-top: 70px;">
         <h4>Utilisateurs</h4>
-        <table class="table table-bordered">
-            <tr class="ligne-impaire">
+        <table aria-describedby="Tableau des points" class="table table-bordered">
+            <th scope="col" class="ligne-impaire">
                 <td>Email</td>
                 <td>Username</td>
                 <td>Equipe</td>
                 <td>Nombre_points</td>
-            </tr>
+            </th>
             <tr>
             </tr>
             {% for user in users %}

@@ -37,15 +37,15 @@
 
     <div style="margin-top: 70px;">
         <h4>Petits déjeuners</h4>
-        <table class="table table-bordered">
-            <tr class="ligne-impaire">
+        <table aria-describedby="Tableau des déjeuners" class="table table-bordered">
+            <th scope="col" class="ligne-impaire">
                 <td>Date</td>
                 <td>Vali?</td>
                 <td>Absents</td>
                 <td>Participants</td>
                 <td>Organisateurs</td>
                 <td>Mes points</td>
-            </tr>
+            </th>
             <tr>
             </tr>
             {% for petit_dej in petit_dejs %}

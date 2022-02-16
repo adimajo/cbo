@@ -3,7 +3,7 @@ urls module
 """
 from django.urls import path
 
-from . import views
+from Dej import views
 
 app_name = 'Dej'
 urlpatterns = [

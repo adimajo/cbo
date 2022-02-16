@@ -266,13 +266,13 @@ i {
   margin-top: 0px;
   margin-bottom: 0px;
   padding: 10px;
-  font-family: Verdana;
+  font-family: Verdana, sans-serif;
 }
 
 input {
   border-color: rgb(180, 180, 180);
   border-width: thin;
-  font-family: Verdana;
+  font-family: Verdana, sans-serif;
   margin-top: 0px;
 }
 
@@ -328,7 +328,7 @@ table.dataframe,
 
 .table th {
   background-color: #DDEBF7;
-  //color: white;
+  color: white;
   text-align: center;
 }
 

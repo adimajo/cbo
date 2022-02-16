@@ -22,9 +22,9 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
 # Homemade packages
-from .models import PetitDej, PetitDejForm, User
-from .models import ResponsablePetitDej
-from .utils import Calendar
+from Dej.models import PetitDej, PetitDejForm, User
+from Dej.models import ResponsablePetitDej
+from Dej.utils import Calendar
 
 
 # ====================================== Variable init =================================================================

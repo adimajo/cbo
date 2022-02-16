@@ -6,21 +6,16 @@ models module
 # Gestion des données
 # Dates
 import datetime
-# OS
-# import os
-# import tempfile
-# from datetime import timedelta
 from uuid import uuid4
 
 import numpy as np
 import pandas as pd
-# import pythoncom
-# import win32com.client as win32
 from django.contrib.auth.models import AbstractUser
 # Package Django
 from django.db import models
 from django.forms import ModelForm
-# ICS
+
+# ICS - to be replaced with API
 # from icalendar import Calendar, Event, Alarm
 # from icalendar import vCalAddress, vText
 
