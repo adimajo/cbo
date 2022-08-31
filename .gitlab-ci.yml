@@ -62,6 +62,7 @@ stages:
   - deploy_dev
   - promote_staging
   - promote_stable
+  - promote_stable_forced
 
 lint:
   stage: lint
