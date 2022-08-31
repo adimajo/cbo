@@ -26,7 +26,7 @@ variables:
     - eval $(ssh-agent -s)
 
     # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
-    - echo "$BOOT_GITLAB_SSH_KEY" |  tr -d ' ' | base64 -d | ssh-add -
+    - echo "$GITLAB_SSH_KEY" |  tr -d ' ' | base64 -d | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan gitlab.ca.cib >> ~/.ssh/known_hosts
@@ -90,6 +90,7 @@ generate_tag:
       - CBO/Pipfile
       - CBO/Pipfile.lock
   stage: versionning
+  <<: *global_cache
   <<: *common_python
   <<: *common_tag
   only:
@@ -154,7 +155,7 @@ quality_check:
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> cacreditagricoleserver.crt
     - apk --update add java-common
     - keytool -import -alias mycert -file cacreditagricoleserver.crt -storetype jks -trustcacerts -noprompt -keypass keypass -keystore cacerts -storepass test@123
-    - sonar-scanner -Dsonar.exclusions=tests/**,docs/**,coverage.xml -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$BOOT_SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
+    - sonar-scanner -Dsonar.exclusions=tests/**,docs/**,coverage.xml -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.qualitygate.wait=true -Dsonar.projectKey=$SONAR_KEY -Dsonar.projectVersion=$APPLICATION_TAG_VERSION
   only:
    - master
 
@@ -173,7 +174,7 @@ document:
     - git config --global http.sslverify false
     - git config --global user.name "$GITLAB_USER_NAME"
     - git config --global user.email "$GITLAB_USER_EMAIL"
-    - git clone https://$BOOT_GITLAB_SRV_ACCOUNT:$BOOT_GITLAB_CAGIP_TOKEN@$BOOT_GITLAB_DOCS_REPO docs_to_publish
+    - git clone https://$GITLAB_SRV_ACCOUNT:$GITLAB_TOKEN@$GITLAB_DOCS_REPO docs_to_publish
     - rm -rf docs_to_publish/public
     - mkdir docs_to_publish/public
     - cp -r build/html/* docs_to_publish/public/
