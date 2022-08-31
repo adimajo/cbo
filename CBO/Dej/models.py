@@ -250,9 +250,9 @@ class PetitDej(models.Model):
                            "Peu de points : \n\t- {}\n\n" \
                            "Nombreux points : \n\t- {}\n\n" \
                            "CBO".format(date_str,
-                                                        "\n\t- ".join([x.username for x in organisateurs]),
-                                                        tableau_scores_up,
-                                                        tableau_scores_down)
+                                        "\n\t- ".join([x.username for x in organisateurs]),
+                                        tableau_scores_up,
+                                        tableau_scores_down)
 
         # 1) Mail pour les responsables
         mail = EmailMultiAlternatives(subject=subject,
