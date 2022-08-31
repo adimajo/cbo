@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'DjangoSite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 try:
-    TEST_DB = bool(int(os.environ.get('TEST_DB', False)))
+    TEST_DB = os.getenv("TEST_DB", 'False').lower() in ('true', '1', 't')
 except ValueError:
     TEST_DB = False
 
@@ -134,3 +134,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = False
+EMAIL_HOST = '10.245.192.12'
+EMAIL_PORT = 25

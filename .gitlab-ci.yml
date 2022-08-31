@@ -6,6 +6,12 @@
   image:
     name: layer-kraft.registry.saas.cagip.group.gca/ci-tools:latest
 
+variables:
+  WORKON_HOME: "$CI_PROJECT_DIR/.cache/venvs"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PIPENV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pipenv"
+  PIPENV_PIPFILE: "$CI_PROJECT_DIR/CBO/Pipfile"
+
 .common_tag: &common_tag
   tags:
   - kubernetes
@@ -29,11 +35,27 @@
     - git config --global user.name "$GITLAB_USER_NAME"
     - git config --global user.email "$GITLAB_USER_EMAIL"
 
+.global_cache: &global_cache
+  cache:
+    paths:
+      - .cache/pip
+      - .cache/pipenv
+      - .cache/venvs
+    policy: pull-push
+
+.pull_cache: &pull_cache
+  cache:
+    paths:
+      - .cache/pip
+      - .cache/pipenv
+      - .cache/venvs
+    policy: pull
+
 stages:
   - lint
+  - versionning
   - test
   - security
-  - versionning
   - sonar_check
   - document
   - build
@@ -43,6 +65,7 @@ stages:
 
 lint:
   stage: lint
+  <<: *global_cache
   <<: *common_python
   <<: *common_tag
   script:
@@ -59,18 +82,35 @@ lint:
       - .gitlab-ci.yml
       - CBO/**/*
 
+generate_tag:
+  artifacts:
+    paths:
+      - build.env
+      - CBO/Pipfile
+      - CBO/Pipfile.lock
+  stage: versionning
+  <<: *common_python
+  <<: *common_tag
+  only:
+   - master
+  script:
+    - apt update && apt -y install libpq-dev gcc
+    - pip install pipenv
+    - pipenv install
+    - echo export APPLICATION_TAG_VERSION=`pipenv run python -c 'import CBO; print(CBO.__version__)'` >> build.env
+
 test:
   artifacts:
     paths:
       - coverage.xml
   stage: test
+  <<: *global_cache
   <<: *common_python
   <<: *common_tag
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
-    - pip install pipenv==2021.5.29
-    - apt update
-    - apt -y install libpq-dev gcc
-    - export PIPENV_PIPFILE=CBO/Pipfile
+    - pip install pipenv
+    - apt update && apt -y install libpq-dev gcc
     - pipenv install -d --skip-lock
     - pipenv run coverage run --source CBO/ -m pytest
     - pipenv run coverage report
@@ -85,11 +125,12 @@ test:
 
 security:
   stage: security
+  <<: *pull_cache
   <<: *common_python
   <<: *common_tag
   script:
-  - pip install bandit
-  - bandit -r CBO
+  - pip install pipenv
+  - pipenv run bandit -r CBO
   only:
     refs:
       - branches
@@ -97,31 +138,12 @@ security:
       - .gitlab-ci.yml
       - CBO/**/*
 
-generate_tag:
-  artifacts:
-    paths:
-      - build.env
-      - CBO/Pipfile.lock
-  stage: versionning
-  <<: *common_python
-  <<: *common_tag
-  only:
-   - master
-  script:
-    - pip install pipenv==2021.5.29
-    - apt update
-    - apt -y install libpq-dev gcc
-    - PIPENV_PIPFILE=CBO/Pipfile pipenv install
-    - echo export APPLICATION_TAG_VERSION=`python -c 'import CBO; print(CBO.__version__)'` >> build.env
-
 quality_check:
   stage: sonar_check
   image:
     name: docker-remote.registry.saas.cagip.group.gca/sonarsource/sonar-scanner-cli:4.6
   <<: *common_tag
   variables:
-    SONAR_TOKEN: "${BOOT_SONAR_TOKEN}"
-    SONAR_HOST_URL: "${BOOT_SONAR_INSTANCE}"
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
     GIT_DEPTH: 0 # Tells git to fetch all the branches of the project, required by the analysis task
     SONAR_SCANNER_OPTS: "-Djavax.net.ssl.trustStore=cacerts"
@@ -137,16 +159,14 @@ quality_check:
 
 document:
   stage: document
+  <<: *pull_cache
   <<: *common_python
   <<: *common_tag
   script:
     - . ./build.env
-    - pip install pipenv==2021.5.29
-    - apt update
-    - apt install -y make libpq-dev gcc git
+    - pip install pipenv
+    - apt update && apt install -y make libpq-dev gcc git
     - cd docs
-    - export PIPENV_PIPFILE=../CBO/Pipfile
-    - pipenv install -d --skip-lock
     - pipenv run make clean
     - pipenv run make html
     - git config --global http.sslverify false
@@ -189,7 +209,7 @@ build CBO:
     - mkdir -p /kaniko/.docker
     - |-
        KANIKOPROXYBUILDARGS=""
-       KANIKOCFG="{\"auths\":{\"https://$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY\":{\"auth\":\"$(echo -n $BOOT_ARTI_USER:$BOOT_ARTI_PASSWORD | base64 | tr -d '\n')\"}}}"
+       KANIKOCFG="{\"auths\":{\"https://$ARTI_SCRATCH_REGISTRY.$ARTI_REGISTRY\":{\"auth\":\"$(echo -n $ARTI_USER:$ARTI_PASSWORD | base64 | tr -d '\n')\"}}}"
        if [ "x${http_proxy}" != "x" -o "x${https_proxy}" != "x" ]; then
          KANIKOCFG="${KANIKOCFG}, \"proxies\": { \"default\": { \"httpProxy\": \"${http_proxy}\", \"httpsProxy\": \"${https_proxy}\", \"noProxy\": \"${no_proxy}\"}}"
          KANIKOPROXYBUILDARGS="--build-arg http_proxy=${http_proxy} --build-arg https_proxy=${https_proxy} --build-arg no_proxy=${no_proxy}"
@@ -197,7 +217,7 @@ build CBO:
        KANIKOCFG="${KANIKOCFG} }"
        echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg SECRET_KEY=$SECRET_KEY --build-arg PASSWORD=$PASSWORD --build-arg NAME=$NAME --build-arg POSTGRES_MASTER_DB=$POSTGRES_MASTER_DB --build-arg POSTGRES_MASTER_USER=$POSTGRES_MASTER_USER --build-arg POSTGRES_MASTER_PASSWORD=$POSTGRES_MASTER_PASSWORD --build-arg POSTGRES_SCHEMA=$POSTGRES_SCHEMA --build-arg POSTGRES_PORT=$POSTGRES_PORT --build-arg POSTGRES_URL=$POSTGRES_URL --destination $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --destination $ARTI_SCRATCH_REGISTRY.$ARTI_REGISTRY/$ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
     refs:
       - master
@@ -213,9 +233,9 @@ deploy_dev:
   script:
     - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-    - git clone $BOOT_GITLAB_DEPLOY_REPO yaml_deploy_folder
+    - git clone $GITLAB_DEPLOY_REPO yaml_deploy_folder
     - cd yaml_deploy_folder/dev
-    - kustomize edit set image $BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO=$BOOT_ARTI_SCRATCH_REGISTRY.$BOOT_ARTI_REGISTRY/$BOOT_ARTI_REPO:$APPLICATION_TAG_VERSION
+    - kustomize edit set image $ARTI_SCRATCH_REGISTRY.$ARTI_REGISTRY/$ARTI_REPO=$ARTI_SCRATCH_REGISTRY.$ARTI_REGISTRY/$ARTI_REPO:$APPLICATION_TAG_VERSION
     - |-
         if ! git diff-index --quiet HEAD --; then
             git commit -am "Rollout version $APPLICATION_TAG_VERSION"
@@ -229,31 +249,53 @@ deploy_dev:
 promote_staging:
   stage: promote_staging
   when: manual
-  <<: *ci_tools
+  image: layer-kraft.registry.saas.cagip.group.gca/ci-tools/promote:latest
   <<: *common_tag
   variables:
-    CREDS: "${BOOT_ARTI_USER}:${BOOT_ARTI_PASSWORD}"
-    SOURCE_REPO: "${BOOT_ARTI_SCRATCH_REGISTRY}"
-    TARGET_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
+    CREDS: "${ARTI_USER}:${ARTI_PASSWORD}"
+    SOURCE_REPO: "${ARTI_SCRATCH_REGISTRY}"
+    TARGET_REPO: "${ARTI_STAGING_REGISTRY}"
   script:
     - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-    - 'curl -S -k -u ${CREDS} -XPOST https://$BOOT_ARTI_REGISTRY/api/docker/$SOURCE_REPO/v2/promote -H "Content-Type: application/json" -d"{\"targetRepo\":\"${TARGET_REPO}\",\"dockerRepository\":\"${BOOT_ARTI_REPO}\",\"tag\":\"${APPLICATION_TAG_VERSION}\",\"copy\":true}"'
+    - 'curl -S -k -u ${CREDS} -XPOST https://$ARTI_REGISTRY/artifactory/api/docker/$SOURCE_REPO/v2/promote -H "Content-Type: application/json" -d"{\"targetRepo\":\"${TARGET_REPO}\",\"dockerRepository\":\"${ARTI_REPO}\",\"tag\":\"${APPLICATION_TAG_VERSION}\",\"copy\":true}"'
   only:
    - master
 
 promote_stable:
   stage: promote_stable
   when: manual
-  <<: *ci_tools
+  image: layer-kraft.registry.saas.cagip.group.gca/ci-tools/promote:latest
   <<: *common_tag
   variables:
-    SOURCE_REPO: "${BOOT_ARTI_STAGING_REGISTRY}"
-    TARGET_REPO: "${BOOT_ARTI_STABLE_REGISTRY}"
-    IMAGE: "${BOOT_ARTI_REPO}"
+    SOURCE_REPO: "${ARTI_STAGING_REGISTRY}"
+    TARGET_REPO: "${ARTI_STABLE_REGISTRY}"
+    IMAGE: "${ARTI_REPO}"
   script:
     - . ./build.env
     - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
     - docker-promote --tag=$APPLICATION_TAG_VERSION
   only:
    - master
+  allow_failure: false
+
+promote_stable_forced:
+  stage: promote_stable_forced
+  image: layer-kraft.registry.saas.cagip.group.gca/ci-tools/promote:latest
+  <<: *common_tag
+  variables:
+    SOURCE_REPO: "${ARTI_STAGING_REGISTRY}"
+    TARGET_REPO: "${ARTI_STABLE_REGISTRY}"
+    IMAGE: "${ARTI_REPO}"
+  script:
+    - . ./build.env
+    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+    - docker-promote --tag=$APPLICATION_TAG_VERSION --force
+  only:
+    - master
+  needs:
+    - job: generate_tag
+      artifacts: true
+    - job: promote_stable
+  when: on_failure
+  allow_failure: false

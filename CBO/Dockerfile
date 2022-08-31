@@ -1,26 +1,6 @@
 # pull official base image
 FROM docker-remote.registry.saas.cagip.group.gca/library/python:3.8-slim
 
-ARG POSTGRES_MASTER_DB
-ARG POSTGRES_MASTER_USER
-ARG POSTGRES_MASTER_PASSWORD
-ARG POSTGRES_SCHEMA
-ARG POSTGRES_PORT
-ARG POSTGRES_URL
-ARG PASSWORD
-ARG SECRET_KEY
-ARG NAME
-
-ENV POSTGRES_MASTER_DB ${POSTGRES_MASTER_DB}
-ENV POSTGRES_MASTER_USER ${POSTGRES_MASTER_USER}
-ENV POSTGRES_MASTER_PASSWORD ${POSTGRES_MASTER_PASSWORD}
-ENV POSTGRES_SCHEMA ${POSTGRES_SCHEMA}
-ENV POSTGRES_PORT ${POSTGRES_PORT}
-ENV POSTGRES_URL ${POSTGRES_URL}
-ENV PGPASSWORD ${POSTGRES_MASTER_PASSWORD}
-ENV PASSWORD ${PASSWORD}
-ENV SECRET_KEY ${SECRET_KEY}
-ENV USER_DJANGO ${NAME}
 ENV CSRF_COOKIE_NAME cbocsrftoken
 ENV SESSION_COOKIE_NAME cbo
 ENV CSRF_COOKIE_DOMAIN .k8s.caas.ca-sa.gca
@@ -39,6 +19,11 @@ RUN apt update \
 && pipenv install --system --deploy \
 && python manage.py collectstatic --noinput \
 && python manage.py makemigrations
+
+RUN export APPLICATION_TAG_VERSION=`python -c 'import cbo; print(cbo.__version__)'`
+
+LABEL da.da/cbo.version=$APPLICATION_TAG_VERSION \
+      da.da/cbo.contact=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr
 
 ENTRYPOINT su -m postgres -c "psql -h ${POSTGRES_URL} -p ${POSTGRES_PORT} -U ${POSTGRES_MASTER_USER} -d ${POSTGRES_MASTER_DB} -tc \"CREATE SCHEMA IF NOT EXISTS ${POSTGRES_SCHEMA}\"" \
 && python manage.py migrate \
