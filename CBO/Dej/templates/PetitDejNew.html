@@ -19,7 +19,7 @@
         {% for item in js_files%}
         <script src="{{ item }}"></script>
         {% endfor %}
-        {% for script in bokeh_scripts%}
+        {% for script in bokeh_scripts %}
         {{ script | safe }}
     {% endfor %}
 
@@ -27,30 +27,27 @@
 
 
 {% block subtitle %}
-    <p> Bonjour <span class="username"> {{ user.first_name }} </span> !</p>
+    <p>Bonjour <span class="username"> {{ user.first_name }} </span> !</p>
 {% endblock %}
 
 {% block content %}
-<h2> Bienvenue sur l'application CBO!</h2>
+<h2> Bienvenue sur l'application CBO !</h2>
 
     <div>{{ calendar }}</div>
 
     <div id="app">
         <div>
             <label>Date du petit déjeuner</label>
-            <input type="datetime" name="date"
-               v-model="date"/>
+            <input type="datetime" name="date" v-model="date"/>
         </div>
 
         <div>
-            <label>Participation de la validation?</label>
+            <label>Participation de la validation ?</label>
             <input type="checkbox" v-model="participation_vali" @change="load_data()">
         </div>
         <div>
             <label>Nombre de participants : ##nb_participants##</label>
         </div>
-
-
 
         <h3>Les absents</h3>
         <div>

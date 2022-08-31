@@ -168,11 +168,9 @@ class NewPetitDejViewVue(TemplateView):
         save = arg_is_yes(request.POST.get("save", False))
 
         # Mise à jour du petit dejeuner
-        petit_dej = None
         if "top_init" in request.POST:
             petit_dej = PetitDej(date=datetime.datetime.today())
             petit_dej.save()
-
         else:
             uri = request.POST["uri"]
 

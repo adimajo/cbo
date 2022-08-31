@@ -27,7 +27,7 @@
 
 {% block content %}
 
-<div >
+<div>
 
     <div style="flex-grow: 1; margin-top: 70px;">
         <h4>Filtres</h4>
@@ -48,17 +48,15 @@
     <div style="margin-top: 70px;">
         <h4>Utilisateurs</h4>
         <table aria-describedby="Tableau des points" class="table table-bordered">
-            <th scope="col" class="ligne-impaire">
-                <td>Email</td>
-                <td>Username</td>
-                <td>Equipe</td>
-                <td>Nombre_points</td>
-            </th>
-            <tr>
+           <tr>
+                <th>Email</th>
+                <th>Prénom</th>
+                <th>Equipe</th>
+                <th>Points</th>
             </tr>
             {% for user in users %}
             <tr>
-                <td><a href="{% url 'Dej:UserDetailView' user.email%}">{{user.email}}</a></td>
+                <td><a href="{% url 'Dej:UserDetailView' user.email %}">{{ user.email }}</a></td>
                 <td>{{user.username}}</td>
                 <td>{{user.equipe}}</td>
                 <td>{{user.nombre_points}}</td>

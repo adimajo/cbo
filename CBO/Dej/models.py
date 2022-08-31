@@ -23,7 +23,7 @@ from datetime import timedelta
 
 # ============================================
 first_last_name = "{} - {}"
-admin_email = "adrien.ehrhardt@credit-agricole-sa.fr"
+admin_email = "Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr"
 INFORMATIONS_G_N_RALES = "Informations générales"
 LAST_UPDATE = "Last update"
 CREATION_DATE = "Creation date"
@@ -136,7 +136,8 @@ class PetitDej(models.Model):
     def possible_users(self):
         queryset = User.objects.filter(date__lte=self.date).exclude(date_depart__lte=self.date)
         if not self.participation_validation:
-            queryset = User.objects.exclude(equipe="Validation")
+            queryset = queryset.exclude(equipe="Validation")
+        queryset = queryset.exclude(email="Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr")
         return queryset
 
     @property
@@ -173,8 +174,7 @@ class PetitDej(models.Model):
         user_points = {x.email: x.nombre_points for x in self.participants}
 
         # Filtre sur les users d'interets
-        min_points = min(list(
-            user_points.values()))
+        min_points = min(list(user_points.values()))
         # Si tous le monde a des points positifs, on prend la personne ayant le moins de points.
         real_min_points = max(min_points, 0)
         records = [{"email": email, "points": points} for email, points in user_points.items() if
@@ -234,22 +234,18 @@ class PetitDej(models.Model):
         subject = "Petit déjeuner du {}".format(date_str)
 
         body_organ = "Bonjour, " \
-                     "\n\nVous avez été désignés comme organisateurs du petit-déjeuner qui aura lieu le {}.\n\n" \
-                     "" \
-                     "Le nombre de participants attendus par organisateur est de {}.\n\n" \
-                     "" \
-                     "Si vous avez la possibilité de préparer des plats maison, vous obtiendrez des points" \
-                     "bonus!\n\n" \
-                     "Bien cordialement\n\n" \
-                     "" \
-                     "CBO".format(date_str, nb_participants_par_orga)
+                     "\n\nVous avez été désigné(es) comme organisateur(s) du petit-déjeuner qui aura lieu le {}.\n" \
+                     "Le nombre de participant(s) attendu(s) par organisateur est de {}.\n" \
+                     "Si vous avez la possibilité de préparer des plats maison, vous obtiendrez des points " \
+                     "bonus !\n\n" \
+                     "Bien cordialement\n" \
+                     "Chief Breakfast Officer".format(date_str, nb_participants_par_orga)
 
         body_participant = "Bonjour, " \
-                           "\n\nVous etes conviés au petit-déjeuner qui aura lieu le {}.\n\n" \
-                           "" \
-                           "Pour information, les organisateurs désignés sont :\n\t- {}\n\n" \
-                           "Le tableau des scores devient:\n\n" \
-                           "Peu de points : \n\t- {}\n\n" \
+                           "\n\nVous êtes convié(es) au petit-déjeuner qui aura lieu le {}.\n\n" \
+                           "Pour information, l'(es) organisateur(s) désigné(s) sont :\n\t- {}\n\n" \
+                           "Le tableau des scores devient :\n" \
+                           "Peu de points : \n\t- {}\n" \
                            "Nombreux points : \n\t- {}\n\n" \
                            "CBO".format(date_str,
                                         "\n\t- ".join([x.username for x in organisateurs]),
@@ -259,7 +255,7 @@ class PetitDej(models.Model):
         # 1) Mail pour les responsables
         mail = EmailMultiAlternatives(subject=subject,
                                       body=body_organ,
-                                      from_email="Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr",
+                                      from_email=admin_email,
                                       to=[x.email for x in organisateurs],
                                       cc=[admin_email],
                                       reply_to=[admin_email])
@@ -273,8 +269,8 @@ class PetitDej(models.Model):
             event.add('dtstart', self.date)
             event.add('dtend', self.date + timedelta(seconds=1800))
 
-            organizer = vCalAddress('MAILTO:nicolas.damay@credit-agricole-sa.fr')
-            organizer.params['cn'] = vText('Nicolas DAMAY')
+            organizer = vCalAddress('MAILTO:Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr')
+            organizer.params['cn'] = vText('GRO')
             organizer.params['role'] = vText('CHAIR')
             event['organizer'] = organizer
             event['location'] = vText('Forum')
@@ -313,7 +309,7 @@ class PetitDej(models.Model):
         # 2) Mail pour les participants
         mail = EmailMultiAlternatives(subject=subject,
                                       body=body_participant,
-                                      from_email="Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr",
+                                      from_email=admin_email,
                                       to=[x.email for x in participants],
                                       cc=[admin_email],
                                       reply_to=[admin_email])
@@ -327,8 +323,8 @@ class PetitDej(models.Model):
             event.add('dtstart', self.date)
             event.add('dtend', self.date + timedelta(seconds=1800))
 
-            organizer = vCalAddress('MAILTO:nicolas.damay@credit-agricole-sa.fr')
-            organizer.params['cn'] = vText('Nicolas DAMAY')
+            organizer = vCalAddress('MAILTO:Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr')
+            organizer.params['cn'] = vText('GRO')
             organizer.params['role'] = vText('CHAIR')
             event['organizer'] = organizer
             event['location'] = vText('Forum')
