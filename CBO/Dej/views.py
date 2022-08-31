@@ -137,7 +137,7 @@ class NewPetitDejView(TemplateView, LoginRequiredMixin):
     def init_context(self):
         today = datetime.date.today()
         cal = Calendar(today.year, today.month)
-        html_cal = cal.formatmonth(withyear=True)
+        html_cal = cal.formatmonth(theyear=None, themonth=None, withyear=True)
         self.context["calendar"] = mark_safe(html_cal)  # nosec
 
     def get(self, request, *args, **kwargs):
