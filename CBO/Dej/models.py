@@ -22,6 +22,8 @@ import os
 from datetime import timedelta
 
 # ============================================
+first_last_name = "{} - {}"
+admin_email = "adrien.ehrhardt@credit-agricole-sa.fr"
 INFORMATIONS_G_N_RALES = "Informations générales"
 LAST_UPDATE = "Last update"
 CREATION_DATE = "Creation date"
@@ -259,8 +261,8 @@ class PetitDej(models.Model):
                                       body=body_organ,
                                       from_email="Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr",
                                       to=[x.email for x in organisateurs],
-                                      cc=["adrien.ehrhardt@credit-agricole-sa.fr"],
-                                      reply_to=["adrien.ehrhardt@credit-agricole-sa.fr"])
+                                      cc=[admin_email],
+                                      reply_to=[admin_email])
 
         # Générer le fichier .ical
         temp = tempfile.NamedTemporaryFile()
@@ -280,13 +282,13 @@ class PetitDej(models.Model):
 
             for participant in organisateurs:
                 attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+                attendee.params['cn'] = vText(first_last_name.format(participant.first_name, participant.last_name))
                 attendee.params['ROLE'] = vText('REQ-PARTICIPANT')
                 event.add('attendee', attendee, encode=0)
 
             for participant in participants:
                 attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+                attendee.params['cn'] = vText(first_last_name.format(participant.first_name, participant.last_name))
                 attendee.params['ROLE'] = vText('OPT-PARTICIPANT')
                 event.add('attendee', attendee, encode=0)
 
@@ -313,8 +315,8 @@ class PetitDej(models.Model):
                                       body=body_participant,
                                       from_email="Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr",
                                       to=[x.email for x in participants],
-                                      cc=["adrien.ehrhardt@credit-agricole-sa.fr"],
-                                      reply_to=["adrien.ehrhardt@credit-agricole-sa.fr"])
+                                      cc=[admin_email],
+                                      reply_to=[admin_email])
 
         # Générer le fichier .ical
         temp = tempfile.NamedTemporaryFile()
@@ -334,13 +336,13 @@ class PetitDej(models.Model):
 
             for participant in organisateurs:
                 attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+                attendee.params['cn'] = vText(first_last_name.format(participant.first_name, participant.last_name))
                 attendee.params['ROLE'] = vText('REQ-PARTICIPANT')
                 event.add('attendee', attendee, encode=0)
 
             for participant in participants:
                 attendee = vCalAddress('MAILTO:{}'.format(participant.email))
-                attendee.params['cn'] = vText("{} - {}".format(participant.first_name, participant.last_name))
+                attendee.params['cn'] = vText(first_last_name.format(participant.first_name, participant.last_name))
                 attendee.params['ROLE'] = vText('OPT-PARTICIPANT')
                 event.add('attendee', attendee, encode=0)
             cal.add_component(event)

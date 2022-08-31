@@ -13,9 +13,7 @@ EXPOSE 8000
 # install dependencies
 RUN apt update \
 && apt install -y libpq-dev gcc git openssh-client postgresql libxml2 \
-&& pip install --upgrade pip \
 && pip install pipenv \
-&& pipenv run pip install 'setuptools<58' \
 && pipenv install --system --deploy \
 && python manage.py collectstatic --noinput \
 && python manage.py makemigrations
@@ -27,5 +25,5 @@ LABEL da.da/cbo.version=$APPLICATION_TAG_VERSION \
 
 ENTRYPOINT su -m postgres -c "psql -h ${POSTGRES_URL} -p ${POSTGRES_PORT} -U ${POSTGRES_MASTER_USER} -d ${POSTGRES_MASTER_DB} -tc \"CREATE SCHEMA IF NOT EXISTS ${POSTGRES_SCHEMA}\"" \
 && python manage.py migrate \
-&& python manage.py ensure_superuser --password=${PASSWORD} --username=${USER_DJANGO} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr \
+&& python manage.py ensure_superuser --password=${PASSWORD} --username=${USERNAME} --email=Groupe-recherche-operationnelle.GRO@credit-agricole-sa.fr \
 && gunicorn DjangoSite.wsgi:application --bind 0.0.0.0:8000 --worker-class=gevent --timeout 1000
