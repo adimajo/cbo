@@ -15,8 +15,8 @@ variables:
 
 .common_tag: &common_tag
   tags:
-  - kubernetes
-#  - $CURRENT_TAG
+  - $CURRENT_TAG
+#  - kubernetes
 
 .common_deploy: &common_deploy
   before_script:

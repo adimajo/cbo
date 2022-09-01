@@ -15,7 +15,6 @@ bandit = "*"
 [packages]
 numpy = "*"
 pandas = ">=0.25.1"
-backports-zoneinfo = {version = "*", markers = "sys_platform == 'linux'"}
 django = "*"
 django_import_export = "*"
 django-widget-tweaks = "*"
