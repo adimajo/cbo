@@ -1,0 +1,29 @@
+CBO.Dej.Print
+=============
+
+.. automodule:: CBO.Dej.Print
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      MyPrinter
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,30 @@
+CBO.DjangoSite.Singleton
+========================
+
+.. automodule:: CBO.DjangoSite.Singleton
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Personne
+      Singleton
+   
+   
+
+   
+   
+   
+
+
+

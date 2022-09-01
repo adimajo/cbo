@@ -1,0 +1,29 @@
+CBO.Dej.apps
+============
+
+.. automodule:: CBO.Dej.apps
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DejConfig
+   
+   
+
+   
+   
+   
+
+
+
