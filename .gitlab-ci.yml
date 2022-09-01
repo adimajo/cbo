@@ -60,8 +60,8 @@ stages:
   - build
   - deploy_dev
   - promote_staging
-  - promote_stable
-  - promote_stable_forced
+#  - promote_stable
+#  - promote_stable_forced
 
 lint:
   stage: lint
@@ -95,7 +95,7 @@ generate_tag:
   only:
    - master
   script:
-    - apt update && apt -y install libpq-dev gcc
+    - apk --update add --no-cache libpq-dev gcc
     - pip install pipenv
     - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
     - pipenv install
@@ -167,7 +167,7 @@ document:
   script:
     - . ./build.env
     - pip install pipenv
-    - apt update && apt install -y make libpq-dev gcc git
+    - apk --update add --no-cache make libpq-dev gcc git
     - cd docs
     - pipenv run make clean
     - pipenv run make html
@@ -264,40 +264,40 @@ promote_staging:
   only:
    - master
 
-promote_stable:
-  stage: promote_stable
-  when: manual
-  image: layer-kraft.registry.saas.cagip.group.gca/ci-tools/promote:latest
-  <<: *common_tag
-  variables:
-    SOURCE_REPO: "${ARTI_STAGING_REGISTRY}"
-    TARGET_REPO: "${ARTI_STABLE_REGISTRY}"
-    IMAGE: "${ARTI_REPO}"
-  script:
-    - . ./build.env
-    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-    - docker-promote --tag=$APPLICATION_TAG_VERSION
-  only:
-   - master
-  allow_failure: false
-
-promote_stable_forced:
-  stage: promote_stable_forced
-  image: layer-kraft.registry.saas.cagip.group.gca/ci-tools/promote:latest
-  <<: *common_tag
-  variables:
-    SOURCE_REPO: "${ARTI_STAGING_REGISTRY}"
-    TARGET_REPO: "${ARTI_STABLE_REGISTRY}"
-    IMAGE: "${ARTI_REPO}"
-  script:
-    - . ./build.env
-    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
-    - docker-promote --tag=$APPLICATION_TAG_VERSION --force
-  only:
-    - master
-  needs:
-    - job: generate_tag
-      artifacts: true
-    - job: promote_stable
-  when: on_failure
-  allow_failure: false
+#promote_stable:
+#  stage: promote_stable
+#  when: manual
+#  image: layer-kraft.registry.saas.cagip.group.gca/ci-tools/promote:latest
+#  <<: *common_tag
+#  variables:
+#    SOURCE_REPO: "${ARTI_STAGING_REGISTRY}"
+#    TARGET_REPO: "${ARTI_STABLE_REGISTRY}"
+#    IMAGE: "${ARTI_REPO}"
+#  script:
+#    - . ./build.env
+#    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+#    - docker-promote --tag=$APPLICATION_TAG_VERSION
+#  only:
+#   - master
+#  allow_failure: false
+#
+#promote_stable_forced:
+#  stage: promote_stable_forced
+#  image: layer-kraft.registry.saas.cagip.group.gca/ci-tools/promote:latest
+#  <<: *common_tag
+#  variables:
+#    SOURCE_REPO: "${ARTI_STAGING_REGISTRY}"
+#    TARGET_REPO: "${ARTI_STABLE_REGISTRY}"
+#    IMAGE: "${ARTI_REPO}"
+#  script:
+#    - . ./build.env
+#    - 'echo GENERATED TAG : $APPLICATION_TAG_VERSION'
+#    - docker-promote --tag=$APPLICATION_TAG_VERSION --force
+#  only:
+#    - master
+#  needs:
+#    - job: generate_tag
+#      artifacts: true
+#    - job: promote_stable
+#  when: on_failure
+#  allow_failure: false
