@@ -98,7 +98,8 @@ generate_tag:
     - apk --update add --no-cache libpq-dev gcc
     - pip install pipenv
     - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
-    - pipenv install
+    - pipenv install --skip-lock
+    - pipenv graph
     - echo export APPLICATION_TAG_VERSION=`pipenv run python -c 'import CBO; print(CBO.__version__)'` >> build.env
 
 test:
