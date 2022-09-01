@@ -95,7 +95,7 @@ generate_tag:
   only:
    - master
   script:
-    - apk --update add --no-cache libpq-dev gcc libc-dev linux-headers
+    - apk --update add --no-cache libpq-dev g++ libc-dev linux-headers
     - pip install pipenv
     - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
     - pipenv install --skip-lock
@@ -113,7 +113,7 @@ test:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
     - pip install pipenv
-    - apt update && apt -y install libpq-dev gcc libc-dev linux-headers
+    - apt update && apt -y install libpq-dev g++ libc-dev linux-headers
     - pipenv install -d --skip-lock
     - pipenv run coverage run --source CBO/ -m pytest
     - pipenv run coverage report
@@ -168,7 +168,7 @@ document:
   script:
     - . ./build.env
     - pip install pipenv
-    - apk --update add --no-cache make libpq-dev gcc git libc-dev linux-headers
+    - apk --update add --no-cache make libpq-dev g++ git libc-dev linux-headers
     - cd docs
     - pipenv run make clean
     - pipenv run make html
