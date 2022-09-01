@@ -7,6 +7,7 @@
     name: layer-kraft.registry.saas.cagip.group.gca/ci-tools:latest
 
 variables:
+  CURRENT_TAG: "$CURRENT_TAG"
   WORKON_HOME: "$CI_PROJECT_DIR/.cache/venvs"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PIPENV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pipenv"
@@ -15,16 +16,14 @@ variables:
 .common_tag: &common_tag
   tags:
   - kubernetes
+#  - $CURRENT_TAG
 
 .common_deploy: &common_deploy
   before_script:
     # Install ssh-agent if not already installed, it is required by Docker.
-    # (change apt-get to yum if you use a CentOS-based image)
     - 'which ssh-agent || ( apk --update add openssh-client )'
-
     # Run ssh-agent (inside the build environment)
     - eval $(ssh-agent -s)
-
     # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
     - echo "$GITLAB_SSH_KEY" |  tr -d ' ' | base64 -d | ssh-add -
     - mkdir -p ~/.ssh
@@ -98,6 +97,7 @@ generate_tag:
   script:
     - apt update && apt -y install libpq-dev gcc
     - pip install pipenv
+    - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
     - pipenv install
     - echo export APPLICATION_TAG_VERSION=`pipenv run python -c 'import CBO; print(CBO.__version__)'` >> build.env
 

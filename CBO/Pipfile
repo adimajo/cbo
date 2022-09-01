@@ -1,6 +1,6 @@
 [[source]]
 name = "pypi"
-url = "https://registry.saas.cagip.group.gca/artifactory/api/pypi/pypi-remote/simple"
+url = "${PYPI_REMOTE}"
 verify_ssl = false
 
 [dev-packages]

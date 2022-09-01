@@ -1,32 +1,28 @@
-# Projet `WhiteApp`
+# Projet `CBO`
 
-Le package `WhiteApp` est un template BootStrap pour déploiement d'une chaîne CI/CD pour projet Django (Python).
+Le package `CBO` est un site web Django (Python) pour l'organisation de petit-déjeuners d'équipe.
+Chaque personne a des points ; un ou des organisateur(s) sont tirés aléatoirement (avec une probabilité inversement
+proportionnelle à leur nombre de points) ; organiser un petit-déjeuner rapporte des points (+ bonus si fait maison)
+et chaque participation enlève des points. Une notification par email est envoyée aux participants et aux organisateurs.
+
+Une chaîne de CI/CD pour Gitlab et Github complète le projet.
 
 ## Configuration
 
-Les variables d'environnement suivantes sont nécessaire :
-- SECRET_KEY
-- NAME: postgre database name (default: 'django_db');
-- USER: postgre database user (default: 'django');
-- PASSWORD: postgre database password (default: '');
-- HOST: postgre database host(name or IP, default: '' - An empty string means localhost);
-- PORT: postgre database port (default: '' - An empty string means the default port);
-- TEST_DB: use test (sqlite3) database? (default: False).
-- TEST_STATIC: use STATICROOT setting? (default: False).
+Les variables d'environnement suivantes sont nécessaires au démarrage du container / pod :
+- SECRET_KEY : clé secrète Django ;
+- USERNAME : username du superuser à créer s'il n'existe pas déjà ;
+- PASSWORD : password du superuser à créer s'il n'existe pas déjà ;
+- TEST_DB : mettre '1' pour utiliser une base sqlite3 locale ;
+- TEST_STATIC : use STATICROOT setting? (default: False);
+- POSTGRES_URL : URL de la base postgresql ;
+- POSTGRES_PORT : port de la base postgresql ;
+- POSTGRES_MASTER_DB : nom de la database postgresql ;
+- POSTGRES_MASTER_USER : username du compte postgresql ;
+- PGPASSWORD : password du compte postgresql ;
+- POSTGRES_SCHEMA : schéma spécifique à l'application à créer et ou stocker les tables.
 
-### Exemple
-
-Les variables d'environnement utilisées en développement local sont par exemple :
-
-SECRET_KEY=GRO
-NAME=django_db
-PASSWORD=CoinCoin
-USER_DB=django
-TEST=0
-
-Celles-ci peuvent être ajoutées automatiquement au terminal dans PyCharm, via Settings > Tools > Terminal.
-
-## Installation
+## Développement
 
 ### Environnement Python
 
@@ -56,10 +52,3 @@ d'intérêt.
 L'installation offline à partir des `wheels` préalablement téléchargées se fait avec la commande 
 `pip install --no-index --find-links dossier` où `dossier` le dossier dans lequel on vient de
 stocker les `wheels`.
-
-### Postgres SQL
-
-Ce package fait appel à PSQL pour la base de données Django via un container docker.
-
-Il convient de remplacer NAME, USER_DB, PASSWORD, HOST et PORT par celles correspondant
-à votre installation de Postgres, et supprimer le container 'db' du docker-compose.yml.
