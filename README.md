@@ -1,3 +1,10 @@
+[![Python Django docker](https://github.com/adimajo/cbo/actions/workflows/python-django.yml/badge.svg)](https://github.com/adimajo/cbo/actions/workflows/python-django.yml)
+[![Build Status](https://app.travis-ci.com/adimajo/cbo.svg?token=opB6ydhp1rfhZkQiU4AY&branch=master)](https://app.travis-ci.com/adimajo/cbo)
+[![pipeline status](https://gitlab.com/adimajo/cbo/badges/master/pipeline.svg)](https://gitlab.com/adimajo/cbo/-/commits/master)
+
+[![Coverage status](https://codecov.io/gh/adimajo/cbo/branch/master/graph/badge.svg)](https://codecov.io/github/adimajo/cbo?branch=master)
+[![coverage report](https://gitlab.com/adimajo/cbo/badges/master/coverage.svg)](https://gitlab.com/adimajo/cbo/-/commits/master)
+
 # Projet `CBO`
 
 Le package `CBO` est un site web Django (Python) pour l'organisation de petit-déjeuners d'équipe.
