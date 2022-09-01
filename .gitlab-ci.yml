@@ -219,7 +219,7 @@ build CBO:
        KANIKOCFG="${KANIKOCFG} }"
        echo "${KANIKOCFG}" >> /kaniko/.docker/config.json
     - wget -qO - http://crl-priv-pki.credit-agricole.fr/ca/cacreditagricoleserver.crt >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt
-    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --destination $ARTI_SCRATCH_REGISTRY.$ARTI_REGISTRY/$ARTI_REPO:$APPLICATION_TAG_VERSION
+    - /kaniko/executor --cache=true --context . --dockerfile Dockerfile $KANIKOPROXYBUILDARGS --build-arg DOCKER_REGISTRY=$DOCKER_REGISTRY --destination $ARTI_SCRATCH_REGISTRY.$ARTI_REGISTRY/$ARTI_REPO:$APPLICATION_TAG_VERSION
   only:
     refs:
       - master

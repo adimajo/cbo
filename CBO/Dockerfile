@@ -1,5 +1,5 @@
-# pull official base image
-FROM docker-remote.registry.saas.cagip.group.gca/library/python:3.8-slim
+ARG DOCKER_REGISTRY
+FROM ${DOCKER_REGISTRY}python:3.8-slim
 
 ENV CSRF_COOKIE_NAME cbocsrftoken
 ENV SESSION_COOKIE_NAME cbo
