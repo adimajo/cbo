@@ -95,7 +95,7 @@ generate_tag:
   only:
    - master
   script:
-    - apk --update add --no-cache libpq-dev g++ libc-dev linux-headers
+    - apk --update add --no-cache libpq-dev g++ libc-dev linux-headers gfortran
     - pip install pipenv
     - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
     - pipenv install --skip-lock
