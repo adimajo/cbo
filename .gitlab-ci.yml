@@ -96,15 +96,11 @@ generate_tag:
    - master
   script:
     - apk --update add --no-cache libpq-dev gcc gfortran build-base wget libpng-dev openblas-dev linux-headers
-    - pip install pipenv
-    - pip install numpy
-    - pip install pandas
-    - pip install django
     - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
     - pipenv install --skip-lock
     - pipenv graph
     - echo export APPLICATION_TAG_VERSION=`pipenv run python -c 'import CBO; print(CBO.__version__)'` >> build.env
-  timeout: 2h
+  timeout: 5h
 
 test:
   artifacts:
