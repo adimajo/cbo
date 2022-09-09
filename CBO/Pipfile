@@ -13,8 +13,10 @@ numpydoc = "*"
 bandit = "*"
 
 [packages]
+cython = "*"
 numpy = "*"
 pandas = ">=0.25.1"
+psycopg2-binary = "*"
 django = "*"
 django_import_export = "*"
 django-widget-tweaks = "*"
@@ -27,4 +29,3 @@ bokeh = "*"
 scikit-learn = "*"
 whitenoise = {version = "*", extras = ["brotli"], markers = "sys_platform == 'linux'"}
 gunicorn = {version = "*", extras = ["gevent"], markers = "sys_platform == 'linux'"}
-psycopg2-binary = "*"

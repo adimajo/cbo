@@ -95,8 +95,11 @@ generate_tag:
   only:
    - master
   script:
-    - apk --update add --no-cache libpq-dev g++ libc-dev linux-headers gfortran build-base openblas-dev
+    - apk --update add --no-cache libpq-dev gcc gfortran build-base wget libpng-dev openblas-dev linux-headers
     - pip install pipenv
+    - pip install numpy
+    - pip install pandas
+    - pip install django
     - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
     - pipenv install --skip-lock
     - pipenv graph
