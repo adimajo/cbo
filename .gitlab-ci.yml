@@ -101,6 +101,7 @@ generate_tag:
     - pipenv install --skip-lock
     - pipenv graph
     - echo export APPLICATION_TAG_VERSION=`pipenv run python -c 'import CBO; print(CBO.__version__)'` >> build.env
+  timeout: 2h
 
 test:
   artifacts:
@@ -140,6 +141,7 @@ security:
     changes:
       - .gitlab-ci.yml
       - CBO/**/*
+  timeout: 2h
 
 quality_check:
   stage: sonar_check
