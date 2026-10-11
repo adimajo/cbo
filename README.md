@@ -1,61 +1,93 @@
-[![Python Django docker](https://github.com/adimajo/cbo/actions/workflows/python-django.yml/badge.svg)](https://github.com/adimajo/cbo/actions/workflows/python-django.yml)
-[![Build Status](https://app.travis-ci.com/adimajo/cbo.svg?token=opB6ydhp1rfhZkQiU4AY&branch=master)](https://app.travis-ci.com/adimajo/cbo)
+[![CI](https://github.com/adimajo/cbo/actions/workflows/ci.yml/badge.svg)](https://github.com/adimajo/cbo/actions/workflows/ci.yml)
 [![pipeline status](https://gitlab.com/adimajo/cbo/badges/master/pipeline.svg)](https://gitlab.com/adimajo/cbo/-/commits/master)
-
 [![Coverage status](https://codecov.io/gh/adimajo/cbo/branch/master/graph/badge.svg)](https://codecov.io/github/adimajo/cbo?branch=master)
-[![coverage report](https://gitlab.com/adimajo/cbo/badges/master/coverage.svg)](https://gitlab.com/adimajo/cbo/-/commits/master)
 
-# Projet `CBO`
+# CBO, the Chief Breakfast Officer
 
-Le package `CBO` est un site web Django (Python) pour l'organisation de petit-déjeuners d'équipe.
-Chaque personne a des points ; un ou des organisateur(s) sont tirés aléatoirement (avec une probabilité inversement
-proportionnelle à leur nombre de points) ; organiser un petit-déjeuner rapporte des points (+ bonus si fait maison)
-et chaque participation enlève des points. Une notification par email est envoyée aux participants et aux organisateurs.
+CBO is a [Django](https://www.djangoproject.com/) web application that organises team breakfasts fairly.
 
-Une chaîne de CI/CD pour Gitlab et Github complète le projet.
+* Everybody has a **points balance**. Attending a breakfast costs one point; hosting earns the points paid by the
+  participants (+50% when the food is home-made).
+* Hosts are **drawn at random**, the lower someone's balance the likelier they are picked.
+* Hosts and participants are **notified by e-mail**, with a calendar invitation attached.
+* The interface is available in **English and French**; each user switches language from the header.
+
+Documentation: <https://adimajo.github.io/cbo/>
+
+## Quick start
+
+You need [uv](https://docs.astral.sh/uv/) and Python 3.12+.
+
+```bash
+uv sync
+uv run python scripts/compile_messages.py     # build the translation catalogues
+export DEBUG=1 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
+uv run python manage.py migrate
+uv run python manage.py createsuperuser
+uv run python manage.py runserver
+```
+
+Open <http://localhost:8000/>, sign in, add the team members in the administration (<http://localhost:8000/admin/>,
+*Users*: set e-mail, team and arrival date), then organise a breakfast from *New breakfast*. Without further
+configuration the app uses SQLite and prints e-mails to the console.
 
 ## Configuration
 
-Les variables d'environnement suivantes sont nécessaires au démarrage du container / pod :
-- SECRET_KEY : clé secrète Django ;
-- USERNAME : username du superuser à créer s'il n'existe pas déjà ;
-- PASSWORD : password du superuser à créer s'il n'existe pas déjà ;
-- TEST_DB : mettre '1' pour utiliser une base sqlite3 locale ;
-- TEST_STATIC : use STATICROOT setting? (default: False);
-- POSTGRES_URL : URL de la base postgresql ;
-- POSTGRES_PORT : port de la base postgresql ;
-- POSTGRES_MASTER_DB : nom de la database postgresql ;
-- POSTGRES_MASTER_USER : username du compte postgresql ;
-- PGPASSWORD : password du compte postgresql ;
-- POSTGRES_SCHEMA : schéma spécifique à l'application à créer et ou stocker les tables.
+Everything is configured through environment variables; the full list is in the
+[documentation](https://adimajo.github.io/cbo/configuration.html). The essentials:
 
-## Développement
+| Variable | Purpose |
+| --- | --- |
+| `SECRET_KEY` | Django secret key (required unless `DEBUG=1`) |
+| `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` | Comma-separated hosts / origins the site is served from |
+| `POSTGRES_MASTER_DB`, `POSTGRES_MASTER_USER`, `POSTGRES_MASTER_PASSWORD`, `POSTGRES_URL`, `POSTGRES_PORT`, `POSTGRES_SCHEMA` | PostgreSQL connection; SQLite is used when `POSTGRES_MASTER_DB` is unset |
+| `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS` | SMTP server |
+| `CBO_ADMIN_EMAIL` | Shared mailbox used as sender and calendar organiser |
+| `CBO_OPTIONAL_TEAM` | A team that can be left out of a given breakfast |
+| `LANGUAGE_CODE` | Default language, `en` or `fr` |
+| `TIME_ZONE` | Time zone for dates (default `UTC`) |
 
-### Environnement Python
+## Docker
 
-Le projet utilise **python 3.8** dans un container Docker.
+```bash
+docker build -t cbo .
+docker run -p 8000:8000 -v cbo-data:/data \
+    -e SECRET_KEY=change-me -e ALLOWED_HOSTS=localhost -e SECURE_COOKIES=0 \
+    -e CBO_ADMIN_USERNAME=admin -e CBO_ADMIN_PASSWORD=change-me \
+    cbo
+```
 
-Le projet utilise également **pipenv**.
-[Une ressource intéressante](https://moodle.insa-rouen.fr/pluginfile.php/75430/mod_resource/content/4/Python-PipPyenv.pdf).
+The entrypoint creates the PostgreSQL schema when needed, applies the migrations, creates the administrator when
+`CBO_ADMIN_USERNAME` and `CBO_ADMIN_PASSWORD` are set, and starts gunicorn on port 8000. Images are published to
+`ghcr.io/adimajo/cbo`.
 
-L'ensemble des dépendances python sont listées dans le fichier `Pipfile`.
-Celles-ci peuvent être installées à l'aide de pipenv avec `pipenv install [-d]`.
+## Development
 
-Pour télécharger l'ensemble des dépendances du projet afin de les porter ensuite 
-sur une machine qui disposerait d'un accès limité à internet, il faut utiliser la commande
- `pipenv lock -r > requirements.txt` qui va transformer le `Pipfile` en un `requirements.txt`.
+```bash
+uv sync
+uv run python scripts/compile_messages.py
+uv run pytest                                  # tests
+uv run ruff check . && uv run ruff format .    # lint and format
+uv run bandit -r cbo breakfast                 # security linter
+uv run --group docs make -C docs html          # documentation
+```
 
-### Utilisation pour téléchargement des dépendances
+### Translations
 
-A partir du fichier `requirements.txt`, il devient facile de télécharger les packages sous la forme 
-de `wheels` pour les installer ensuite sur un environnement dépourvu de connexion internet.
+User-facing strings go through Django's i18n. The catalogues are in `breakfast/locale/<language>/LC_MESSAGES/`.
+To add or refresh a language run `python manage.py makemessages -l <code>` (needs GNU gettext), edit the `.po`
+file, compile with `python manage.py compilemessages` (or `python scripts/compile_messages.py`, which only needs
+Python) and list the language in `LANGUAGES` in `cbo/settings.py`. Compiled `.mo` files are not committed.
 
-Il faut utiliser la commande `pip download -d dossier -r path_to/requirements.txt` où `dossier` représente
-le dossier dans lequel on veut stocker les `wheels` et `path_to` désigne le chemin vers le fichier `requirements.txt`
-d'intérêt.
+## Upgrading from 1.x
 
-### Installation offline ultérieure
+Version 2 is a rewrite and **the database schema changed**: the app and the models were renamed to English
+(`Dej` → `breakfast`, `PetitDej` → `Breakfast`, `nombre_points` → `points`, …) and the migrations are now part of the
+repository (1.x generated them when building the image). A 1.x database cannot be migrated in place: start from an
+empty database, then recreate the users in the administration. Other changes to be aware of:
 
-L'installation offline à partir des `wheels` préalablement téléchargées se fait avec la commande 
-`pip install --no-index --find-links dossier` où `dossier` le dossier dans lequel on vient de
-stocker les `wheels`.
+* the superuser variables are now `CBO_ADMIN_USERNAME` / `CBO_ADMIN_PASSWORD` (`USERNAME` collided with the one the
+  operating system sets);
+* `DEBUG` is off by default and `SECRET_KEY` is required;
+* host names, cookie names, the shared mailbox and the optional team were hard-coded and are now configurable;
+* a breakfast only counts towards points once confirmed, so abandoned drafts no longer cost anybody a point.

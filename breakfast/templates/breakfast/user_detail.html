@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ profile.username }} · CBO{% endblock %}
+
+{% block content %}
+<h1>{{ profile.username }}</h1>
+<dl class="facts">
+    <dt>{% translate "Email" %}</dt><dd>{{ profile.email }}</dd>
+    <dt>{% translate "Arrival date" %}</dt><dd>{{ profile.arrival_date }}</dd>
+    <dt>{% translate "Team" %}</dt><dd>{{ profile.team|default:"–" }}</dd>
+    <dt>{% translate "Points" %}</dt><dd>{{ profile.points|floatformat:2 }}</dd>
+</dl>
+
+<h2>{% translate "Breakfasts" %}</h2>
+<div class="table-wrap">
+<table class="data">
+    <thead>
+    <tr>
+        <th scope="col">{% translate "Date" %}</th>
+        <th scope="col" class="num">{% translate "Absentees" %}</th>
+        <th scope="col" class="num">{% translate "Participants" %}</th>
+        <th scope="col" class="num">{% translate "Hosts" %}</th>
+        <th scope="col" class="num">{% translate "Points earned" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in rows %}
+    <tr>
+        <td>
+            {% if user.is_staff %}<a href="{% url 'admin:breakfast_breakfast_change' row.breakfast.pk %}">{{ row.breakfast.date }}</a>
+            {% else %}{{ row.breakfast.date }}{% endif %}
+        </td>
+        <td class="num">{{ row.absentees }}</td>
+        <td class="num">{{ row.participants }}</td>
+        <td class="num">{{ row.hosts }}</td>
+        <td class="num">{{ row.points }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">{% translate "No breakfast yet." %}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

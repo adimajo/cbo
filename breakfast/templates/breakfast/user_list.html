@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Users" %} · CBO{% endblock %}
+
+{% block content %}
+<h1>{% translate "Users" %}</h1>
+
+<form method="get" class="filters">
+    <label>{% translate "Team" %}
+        <select name="team" onchange="this.form.submit()">
+            <option value="">{% translate "All teams" %}</option>
+            {% for team in teams %}<option value="{{ team }}" {% if team == selected_team %}selected{% endif %}>{{ team }}</option>{% endfor %}
+        </select>
+    </label>
+    <noscript><button type="submit">{% translate "Filter" %}</button></noscript>
+</form>
+
+<div class="table-wrap">
+<table class="data">
+    <thead>
+    <tr>
+        <th scope="col">{% translate "Username" %}</th>
+        <th scope="col">{% translate "Email" %}</th>
+        <th scope="col">{% translate "Team" %}</th>
+        <th scope="col" class="num">{% translate "Points" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for person in users %}
+    <tr>
+        <td><a href="{% url 'breakfast:user-detail' person.pk %}">{{ person.username }}</a></td>
+        <td>{{ person.email }}</td>
+        <td>{{ person.team }}</td>
+        <td class="num">{{ person.points|floatformat:2 }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">{% translate "No users." %}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% include "breakfast/_pagination.html" %}
+{% endblock %}

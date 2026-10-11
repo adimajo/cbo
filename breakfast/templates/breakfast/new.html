@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate "New breakfast" %} · CBO{% endblock %}
+
+{% block head %}
+<script type="module" src="{% static 'breakfast/new.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<h1>{% translate "New breakfast" %}</h1>
+
+<section id="breakfast-app" class="card stack" hidden
+         data-create-url="{% url 'breakfast:draft-create' %}"
+         data-update-url="{% url 'breakfast:draft-update' 'TOKEN' %}"
+         data-csrf="{{ csrf_token }}">
+    <div class="field">
+        <label for="date">{% translate "Breakfast date" %}</label>
+        <input type="datetime-local" id="date" required>
+    </div>
+
+    {% if optional_team %}
+    <label class="check">
+        <input type="checkbox" id="include-optional-team">
+        {% blocktranslate %}The {{ optional_team }} team takes part{% endblocktranslate %}
+    </label>
+    {% endif %}
+
+    <p class="count"><span id="participant-count">0</span> {% translate "expected participants" %}</p>
+
+    <fieldset>
+        <legend>{% translate "Absentees" %}</legend>
+        <div id="absentees" class="chips"></div>
+    </fieldset>
+
+    <fieldset>
+        <legend>{% translate "Hosts" %}</legend>
+        <ul id="hosts" class="host-list"></ul>
+        <p id="no-hosts" class="muted">{% translate "Nobody yet. Draw one or pick someone." %}</p>
+        <div class="row">
+            <button type="button" id="draw" class="secondary">{% translate "Draw a host" %}</button>
+            <span class="muted">{% translate "or" %}</span>
+            <select id="designated" aria-label="{% translate 'Choose a host' %}"></select>
+            <button type="button" id="add-designated" class="secondary">{% translate "Add" %}</button>
+        </div>
+    </fieldset>
+
+    <div class="row end">
+        <span id="status" role="status" aria-live="polite"></span>
+        <a id="another" class="button" href="{% url 'breakfast:new' %}" hidden>{% translate "Organise another breakfast" %}</a>
+        <button type="button" id="confirm" class="primary">{% translate "Confirm and notify" %}</button>
+    </div>
+</section>
+
+<noscript><p class="error">{% translate "JavaScript is required to organise a breakfast." %}</p></noscript>
+
+<div hidden>
+    <span data-msg="saving">{% translate "Saving…" %}</span>
+    <span data-msg="saved">{% translate "Saved." %}</span>
+    <span data-msg="confirmed">{% translate "Confirmed: notifications have been sent." %}</span>
+    <span data-msg="remove">{% translate "Remove" %}</span>
+    <span data-msg="homemade">{% translate "Home-made" %}</span>
+    <span data-msg="choose">{% translate "Choose a host…" %}</span>
+    <span data-msg="error">{% translate "Something went wrong." %}</span>
+</div>
+
+{% include "breakfast/_calendar.html" %}
+{% endblock %}

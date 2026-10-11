@@ -1,0 +1,77 @@
+[project]
+name = "cbo"
+version = "2.0.0"
+description = "Chief Breakfast Officer: a Django app that organises team breakfasts fairly"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.12"
+authors = [{ name = "Adrien Ehrhardt" }]
+keywords = ["django", "breakfast", "team", "scheduling"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Django",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "django>=6.1",
+    "icalendar>=6.0",
+    "whitenoise[brotli]>=6.7",
+    "psycopg[binary]>=3.2",
+    "gunicorn>=22.0; sys_platform == 'linux'",
+]
+
+[project.urls]
+Homepage = "https://github.com/adimajo/cbo"
+Documentation = "https://adimajo.github.io/cbo/"
+
+[dependency-groups]
+dev = [
+    "bandit",
+    "coverage[toml]",
+    "pip-audit",
+    "polib",
+    "pytest",
+    "pytest-django",
+    "pytest-env",
+    "ruff",
+]
+docs = [
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["breakfast/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "C90", "DJ"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.isort]
+known-first-party = ["cbo", "breakfast"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "cbo.settings"
+testpaths = ["tests"]
+filterwarnings = ["ignore:No directory at:UserWarning"]
+env = [
+    "TEST_DB=1",
+    "SECRET_KEY=test-secret-key",
+    "CBO_ADMIN_EMAIL=cbo@example.com",
+]
+
+[tool.coverage.run]
+source = ["cbo", "breakfast"]
+omit = ["*/migrations/*", "*/wsgi.py", "*/asgi.py", "manage.py"]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]

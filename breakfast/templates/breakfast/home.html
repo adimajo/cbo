@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<h1>{% blocktranslate with name=user.first_name|default:user.username %}Hello {{ name }}!{% endblocktranslate %}</h1>
+<p class="lead">{% translate "Welcome to CBO, the Chief Breakfast Officer." %}</p>
+<p><a class="button primary" href="{% url 'breakfast:new' %}">{% translate "Organise a breakfast" %}</a></p>
+{% include "breakfast/_calendar.html" %}
+{% endblock %}

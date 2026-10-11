@@ -1,0 +1,13 @@
+.git
+.github
+.venv
+.ruff_cache
+.pytest_cache
+__pycache__
+*.pyc
+*.mo
+db.sqlite3
+staticfiles
+docs
+tests
+.gitlab-ci.yml

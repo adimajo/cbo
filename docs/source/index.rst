@@ -1,22 +1,15 @@
-.. WhiteApp Django documentation master file, created by
-   sphinx-quickstart on Mon Jul 12 16:05:40 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+CBO, the Chief Breakfast Officer
+================================
 
-Welcome to CBO's documentation!
-===========================================
+CBO is a small Django web application that organises team breakfasts fairly: everybody has a points balance,
+hosts are drawn at random (the lower the balance, the likelier the draw), hosting earns points and attending costs
+one. Participants and hosts are notified by e-mail with a calendar invitation.
 
-The Chief Breakfast Officer.
+The interface is available in English and French; users switch language from the header.
 
-.. autosummary::
-   :toctree: _autosummary
+.. toctree::
+   :maxdepth: 2
 
-   CBO
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   configuration
+   how-it-works
+   api
