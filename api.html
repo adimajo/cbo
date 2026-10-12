@@ -1,0 +1,485 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API reference &mdash; CBO 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=51b770b3"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="How it works" href="how-it-works.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            CBO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how-it-works.html">How it works</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-breakfast.models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.models.HOMEMADE_BONUS"><code class="docutils literal notranslate"><span class="pre">HOMEMADE_BONUS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.models.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.User.last_hosted_date"><code class="docutils literal notranslate"><span class="pre">User.last_hosted_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.User.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">User.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.User.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">User.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.User.NotUpdated"><code class="docutils literal notranslate"><span class="pre">User.NotUpdated</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.models.BreakfastQuerySet"><code class="docutils literal notranslate"><span class="pre">BreakfastQuerySet</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.models.Breakfast"><code class="docutils literal notranslate"><span class="pre">Breakfast</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Breakfast.possible_users"><code class="docutils literal notranslate"><span class="pre">Breakfast.possible_users</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Breakfast.points"><code class="docutils literal notranslate"><span class="pre">Breakfast.points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Breakfast.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Breakfast.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Breakfast.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Breakfast.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Breakfast.NotUpdated"><code class="docutils literal notranslate"><span class="pre">Breakfast.NotUpdated</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.models.Host"><code class="docutils literal notranslate"><span class="pre">Host</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Host.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Host.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Host.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">Host.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.Host.NotUpdated"><code class="docutils literal notranslate"><span class="pre">Host.NotUpdated</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.models.UserPointAdjustment"><code class="docutils literal notranslate"><span class="pre">UserPointAdjustment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.UserPointAdjustment.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">UserPointAdjustment.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.UserPointAdjustment.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">UserPointAdjustment.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.UserPointAdjustment.NotUpdated"><code class="docutils literal notranslate"><span class="pre">UserPointAdjustment.NotUpdated</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.models.GlobalPointAdjustment"><code class="docutils literal notranslate"><span class="pre">GlobalPointAdjustment</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.GlobalPointAdjustment.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">GlobalPointAdjustment.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.GlobalPointAdjustment.MultipleObjectsReturned"><code class="docutils literal notranslate"><span class="pre">GlobalPointAdjustment.MultipleObjectsReturned</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.models.GlobalPointAdjustment.NotUpdated"><code class="docutils literal notranslate"><span class="pre">GlobalPointAdjustment.NotUpdated</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-breakfast.services">Services</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.services.compute_points"><code class="docutils literal notranslate"><span class="pre">compute_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.services.refresh_points"><code class="docutils literal notranslate"><span class="pre">refresh_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.services.draw_host"><code class="docutils literal notranslate"><span class="pre">draw_host()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.services.create_draft"><code class="docutils literal notranslate"><span class="pre">create_draft()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.services.confirm"><code class="docutils literal notranslate"><span class="pre">confirm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-breakfast.notifications">Notifications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.notifications.build_invitation"><code class="docutils literal notranslate"><span class="pre">build_invitation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.notifications.send_notifications"><code class="docutils literal notranslate"><span class="pre">send_notifications()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-breakfast.calendar">Calendar</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.calendar.Day"><code class="docutils literal notranslate"><span class="pre">Day</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.calendar.MonthGrid"><code class="docutils literal notranslate"><span class="pre">MonthGrid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.calendar.month_grid"><code class="docutils literal notranslate"><span class="pre">month_grid()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-breakfast.views">Views and JSON API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.CalendarMixin"><code class="docutils literal notranslate"><span class="pre">CalendarMixin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.HomeView"><code class="docutils literal notranslate"><span class="pre">HomeView</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.UserListView"><code class="docutils literal notranslate"><span class="pre">UserListView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.views.UserListView.get_queryset"><code class="docutils literal notranslate"><span class="pre">UserListView.get_queryset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.views.UserListView.get_context_data"><code class="docutils literal notranslate"><span class="pre">UserListView.get_context_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.UserDetailView"><code class="docutils literal notranslate"><span class="pre">UserDetailView</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.views.UserDetailView.model"><code class="docutils literal notranslate"><span class="pre">UserDetailView.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#breakfast.views.UserDetailView.get_context_data"><code class="docutils literal notranslate"><span class="pre">UserDetailView.get_context_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.NewBreakfastView"><code class="docutils literal notranslate"><span class="pre">NewBreakfastView</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.ApiError"><code class="docutils literal notranslate"><span class="pre">ApiError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.draft_state"><code class="docutils literal notranslate"><span class="pre">draft_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.ApiView"><code class="docutils literal notranslate"><span class="pre">ApiView</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.DraftCreateView"><code class="docutils literal notranslate"><span class="pre">DraftCreateView</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#breakfast.views.DraftUpdateView"><code class="docutils literal notranslate"><span class="pre">DraftUpdateView</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CBO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<section id="module-breakfast.models">
+<span id="models"></span><h2>Models<a class="headerlink" href="#module-breakfast.models" title="Link to this heading"></a></h2>
+<p>Data model: users with a points balance, breakfasts, their hosts and manual point adjustments.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="breakfast.models.HOMEMADE_BONUS">
+<span class="sig-prename descclassname"><span class="pre">breakfast.models.</span></span><span class="sig-name descname"><span class="pre">HOMEMADE_BONUS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span><a class="headerlink" href="#breakfast.models.HOMEMADE_BONUS" title="Link to this definition"></a></dt>
+<dd><p>Extra points a host earns per participant when the breakfast is home-made.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.models.User">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_login</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_superuser</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_staff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_active</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_joined</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrival_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">departure_date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">specialty</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">team</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/models.html#User"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.models.User" title="Link to this definition"></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="breakfast.models.User.last_hosted_date">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">last_hosted_date</span></span><a class="headerlink" href="#breakfast.models.User.last_hosted_date" title="Link to this definition"></a></dt>
+<dd><p>Date of the most recent breakfast this user hosted, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.User.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#breakfast.models.User.DoesNotExist" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.User.MultipleObjectsReturned">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#breakfast.models.User.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.User.NotUpdated">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NotUpdated</span></span><a class="headerlink" href="#breakfast.models.User.NotUpdated" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.models.BreakfastQuerySet">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.models.</span></span><span class="sig-name descname"><span class="pre">BreakfastQuerySet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/models.html#BreakfastQuerySet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.models.BreakfastQuerySet" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.models.Breakfast">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.models.</span></span><span class="sig-name descname"><span class="pre">Breakfast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confirmed_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_optional_team</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/models.html#Breakfast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.models.Breakfast" title="Link to this definition"></a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="breakfast.models.Breakfast.possible_users">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">possible_users</span></span><a class="headerlink" href="#breakfast.models.Breakfast.possible_users" title="Link to this definition"></a></dt>
+<dd><p>arrived, not departed, active, and not the service account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Everyone who could attend</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="breakfast.models.Breakfast.points">
+<span class="sig-name descname"><span class="pre">points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/breakfast/models.html#Breakfast.points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.models.Breakfast.points" title="Link to this definition"></a></dt>
+<dd><p>Points each user earned or lost at this breakfast, keyed by user id.</p>
+<p>Participants pay one point each; hosts share what was paid, with a bonus for home-made food.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.Breakfast.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#breakfast.models.Breakfast.DoesNotExist" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.Breakfast.MultipleObjectsReturned">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#breakfast.models.Breakfast.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.Breakfast.NotUpdated">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NotUpdated</span></span><a class="headerlink" href="#breakfast.models.Breakfast.NotUpdated" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.models.Host">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.models.</span></span><span class="sig-name descname"><span class="pre">Host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updated_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">breakfast</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">homemade</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/models.html#Host"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.models.Host" title="Link to this definition"></a></dt>
+<dd><dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.Host.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#breakfast.models.Host.DoesNotExist" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.Host.MultipleObjectsReturned">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#breakfast.models.Host.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.Host.NotUpdated">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NotUpdated</span></span><a class="headerlink" href="#breakfast.models.Host.NotUpdated" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.models.UserPointAdjustment">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.models.</span></span><span class="sig-name descname"><span class="pre">UserPointAdjustment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/models.html#UserPointAdjustment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.models.UserPointAdjustment" title="Link to this definition"></a></dt>
+<dd><p>Manual correction applied to a single user.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.UserPointAdjustment.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#breakfast.models.UserPointAdjustment.DoesNotExist" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.UserPointAdjustment.MultipleObjectsReturned">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#breakfast.models.UserPointAdjustment.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.UserPointAdjustment.NotUpdated">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NotUpdated</span></span><a class="headerlink" href="#breakfast.models.UserPointAdjustment.NotUpdated" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.models.GlobalPointAdjustment">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.models.</span></span><span class="sig-name descname"><span class="pre">GlobalPointAdjustment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/models.html#GlobalPointAdjustment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.models.GlobalPointAdjustment" title="Link to this definition"></a></dt>
+<dd><p>Manual correction applied to every user.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.GlobalPointAdjustment.DoesNotExist">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#breakfast.models.GlobalPointAdjustment.DoesNotExist" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.GlobalPointAdjustment.MultipleObjectsReturned">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">MultipleObjectsReturned</span></span><a class="headerlink" href="#breakfast.models.GlobalPointAdjustment.MultipleObjectsReturned" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.models.GlobalPointAdjustment.NotUpdated">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">NotUpdated</span></span><a class="headerlink" href="#breakfast.models.GlobalPointAdjustment.NotUpdated" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-breakfast.services">
+<span id="services"></span><h2>Services<a class="headerlink" href="#module-breakfast.services" title="Link to this heading"></a></h2>
+<p>Business logic: points bookkeeping, the weighted draw of hosts and the draft life cycle.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.services.compute_points">
+<span class="sig-prename descclassname"><span class="pre">breakfast.services.</span></span><span class="sig-name descname"><span class="pre">compute_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/breakfast/services.html#compute_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.services.compute_points" title="Link to this definition"></a></dt>
+<dd><p>Points of every user: manual adjustments plus the outcome of every confirmed breakfast.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.services.refresh_points">
+<span class="sig-prename descclassname"><span class="pre">breakfast.services.</span></span><span class="sig-name descname"><span class="pre">refresh_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/breakfast/services.html#refresh_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.services.refresh_points" title="Link to this definition"></a></dt>
+<dd><p>Store the freshly computed balance on each user.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.services.draw_host">
+<span class="sig-prename descclassname"><span class="pre">breakfast.services.</span></span><span class="sig-name descname"><span class="pre">draw_host</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">breakfast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#breakfast.models.Breakfast" title="breakfast.models.Breakfast"><span class="pre">Breakfast</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/random.html#random.Random" title="(in Python v3.15)"><span class="pre">Random</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#breakfast.models.Host" title="breakfast.models.Host"><span class="pre">Host</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/breakfast/services.html#draw_host"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.services.draw_host" title="Link to this definition"></a></dt>
+<dd><p>Add a randomly drawn host to <code class="docutils literal notranslate"><span class="pre">breakfast</span></code> and return it (<code class="docutils literal notranslate"><span class="pre">None</span></code> if nobody is left).</p>
+<p>Only the users with the lowest balance are candidates: those at or below zero when anyone is, the single
+lowest otherwise. Among them, the lower the balance the likelier the draw.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.services.create_draft">
+<span class="sig-prename descclassname"><span class="pre">breakfast.services.</span></span><span class="sig-name descname"><span class="pre">create_draft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#breakfast.models.Breakfast" title="breakfast.models.Breakfast"><span class="pre">Breakfast</span></a></span></span><a class="reference internal" href="_modules/breakfast/services.html#create_draft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.services.create_draft" title="Link to this definition"></a></dt>
+<dd><p>Create a draft breakfast, discarding stale drafts on the way.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.services.confirm">
+<span class="sig-prename descclassname"><span class="pre">breakfast.services.</span></span><span class="sig-name descname"><span class="pre">confirm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">breakfast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#breakfast.models.Breakfast" title="breakfast.models.Breakfast"><span class="pre">Breakfast</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/breakfast/services.html#confirm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.services.confirm" title="Link to this definition"></a></dt>
+<dd><p>Mark <code class="docutils literal notranslate"><span class="pre">breakfast</span></code> as confirmed and update everybody’s balance.</p>
+</dd></dl>
+
+</section>
+<section id="module-breakfast.notifications">
+<span id="notifications"></span><h2>Notifications<a class="headerlink" href="#module-breakfast.notifications" title="Link to this heading"></a></h2>
+<p>E-mail notifications with an iCalendar invitation attached.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.notifications.build_invitation">
+<span class="sig-prename descclassname"><span class="pre">breakfast.notifications.</span></span><span class="sig-name descname"><span class="pre">build_invitation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">breakfast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#breakfast.models.Breakfast" title="breakfast.models.Breakfast"><span class="pre">Breakfast</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">hosts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#breakfast.models.User" title="breakfast.models.User"><span class="pre">User</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">participants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#breakfast.models.User" title="breakfast.models.User"><span class="pre">User</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">reminders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bytes" title="(in Python v3.15)"><span class="pre">bytes</span></a></span></span><a class="reference internal" href="_modules/breakfast/notifications.html#build_invitation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.notifications.build_invitation" title="Link to this definition"></a></dt>
+<dd><p>Serialised <code class="docutils literal notranslate"><span class="pre">.ics</span></code> event; with <code class="docutils literal notranslate"><span class="pre">reminders</span></code> it carries alerts to prepare food (for hosts).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.notifications.send_notifications">
+<span class="sig-prename descclassname"><span class="pre">breakfast.notifications.</span></span><span class="sig-name descname"><span class="pre">send_notifications</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">breakfast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#breakfast.models.Breakfast" title="breakfast.models.Breakfast"><span class="pre">Breakfast</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="_modules/breakfast/notifications.html#send_notifications"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.notifications.send_notifications" title="Link to this definition"></a></dt>
+<dd><p>Tell the hosts what is expected of them and the participants who hosts and the leaderboard are.</p>
+</dd></dl>
+
+</section>
+<section id="module-breakfast.calendar">
+<span id="calendar"></span><h2>Calendar<a class="headerlink" href="#module-breakfast.calendar" title="Link to this heading"></a></h2>
+<p>Month grid showing who hosts which day.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.calendar.Day">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.calendar.</span></span><span class="sig-name descname"><span class="pre">Day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.15)"><span class="pre">datetime.date</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">breakfasts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/calendar.html#Day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.calendar.Day" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.calendar.MonthGrid">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.calendar.</span></span><span class="sig-name descname"><span class="pre">MonthGrid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weekdays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weeks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#breakfast.calendar.Day" title="breakfast.calendar.Day"><span class="pre">breakfast.calendar.Day</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/calendar.html#MonthGrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.calendar.MonthGrid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.calendar.month_grid">
+<span class="sig-prename descclassname"><span class="pre">breakfast.calendar.</span></span><span class="sig-name descname"><span class="pre">month_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#breakfast.calendar.MonthGrid" title="breakfast.calendar.MonthGrid"><span class="pre">MonthGrid</span></a></span></span><a class="reference internal" href="_modules/breakfast/calendar.html#month_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.calendar.month_grid" title="Link to this definition"></a></dt>
+<dd><p>Build the grid for <code class="docutils literal notranslate"><span class="pre">year</span></code>/<code class="docutils literal notranslate"><span class="pre">month</span></code> (Monday first) with the confirmed breakfasts filled in.</p>
+</dd></dl>
+
+</section>
+<section id="module-breakfast.views">
+<span id="views-and-json-api"></span><h2>Views and JSON API<a class="headerlink" href="#module-breakfast.views" title="Link to this heading"></a></h2>
+<p>Pages and the JSON API used by the “new breakfast” page.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.CalendarMixin">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">CalendarMixin</span></span><a class="reference internal" href="_modules/breakfast/views.html#CalendarMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.CalendarMixin" title="Link to this definition"></a></dt>
+<dd><p>Adds a month grid to the context, driven by the <code class="docutils literal notranslate"><span class="pre">year</span></code> and <code class="docutils literal notranslate"><span class="pre">month</span></code> query parameters.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.HomeView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">HomeView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#HomeView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.HomeView" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.UserListView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">UserListView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#UserListView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.UserListView" title="Link to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="breakfast.views.UserListView.get_queryset">
+<span class="sig-name descname"><span class="pre">get_queryset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#UserListView.get_queryset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.UserListView.get_queryset" title="Link to this definition"></a></dt>
+<dd><p>Return the list of items for this view.</p>
+<p>The return value must be an iterable and may be an instance of
+<cite>QuerySet</cite> in which case <cite>QuerySet</cite> specific behavior will be enabled.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="breakfast.views.UserListView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#UserListView.get_context_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.UserListView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Get the context for this view.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.UserDetailView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">UserDetailView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#UserDetailView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.UserDetailView" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="breakfast.views.UserDetailView.model">
+<span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#breakfast.views.UserDetailView.model" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#breakfast.models.User" title="breakfast.models.User"><code class="xref py py-class docutils literal notranslate"><span class="pre">User</span></code></a></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="breakfast.views.UserDetailView.get_context_data">
+<span class="sig-name descname"><span class="pre">get_context_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#UserDetailView.get_context_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.UserDetailView.get_context_data" title="Link to this definition"></a></dt>
+<dd><p>Insert the single object into the context dict.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.NewBreakfastView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">NewBreakfastView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#NewBreakfastView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.NewBreakfastView" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="breakfast.views.ApiError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">ApiError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">400</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#ApiError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.ApiError" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="breakfast.views.draft_state">
+<span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">draft_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">breakfast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#breakfast.models.Breakfast" title="breakfast.models.Breakfast"><span class="pre">Breakfast</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="_modules/breakfast/views.html#draft_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.draft_state" title="Link to this definition"></a></dt>
+<dd><p>Everything the frontend needs to render a breakfast being prepared.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.ApiView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">ApiView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#ApiView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.ApiView" title="Link to this definition"></a></dt>
+<dd><p>Base class: JSON in, JSON out, authentication errors reported as JSON rather than redirects.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.DraftCreateView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">DraftCreateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#DraftCreateView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.DraftCreateView" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="breakfast.views.DraftUpdateView">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">breakfast.views.</span></span><span class="sig-name descname"><span class="pre">DraftUpdateView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/breakfast/views.html#DraftUpdateView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#breakfast.views.DraftUpdateView" title="Link to this definition"></a></dt>
+<dd><p>Apply the state sent by the page, then an optional action (<code class="docutils literal notranslate"><span class="pre">draw</span></code>, <code class="docutils literal notranslate"><span class="pre">add_host</span></code> or <code class="docutils literal notranslate"><span class="pre">confirm</span></code>).</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="how-it-works.html" class="btn btn-neutral float-left" title="How it works" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Adrien Ehrhardt.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

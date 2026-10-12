@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>breakfast.views &mdash; CBO 2.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=51b770b3"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            CBO
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../how-it-works.html">How it works</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CBO</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">breakfast.views</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for breakfast.views</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Pages and the JSON API used by the "new breakfast" page."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginRequiredMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">transaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpRequest</span><span class="p">,</span> <span class="n">JsonResponse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_object_or_404</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.utils.translation</span><span class="w"> </span><span class="kn">import</span> <span class="n">gettext</span> <span class="k">as</span> <span class="n">_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views</span><span class="w"> </span><span class="kn">import</span> <span class="n">View</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.views.generic</span><span class="w"> </span><span class="kn">import</span> <span class="n">DetailView</span><span class="p">,</span> <span class="n">ListView</span><span class="p">,</span> <span class="n">TemplateView</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">breakfast</span><span class="w"> </span><span class="kn">import</span> <span class="n">services</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">breakfast.calendar</span><span class="w"> </span><span class="kn">import</span> <span class="n">month_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">breakfast.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Breakfast</span><span class="p">,</span> <span class="n">Host</span><span class="p">,</span> <span class="n">User</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">breakfast.notifications</span><span class="w"> </span><span class="kn">import</span> <span class="n">send_notifications</span>
+
+
+<div class="viewcode-block" id="CalendarMixin">
+<a class="viewcode-back" href="../../api.html#breakfast.views.CalendarMixin">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CalendarMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Adds a month grid to the context, driven by the ``year`` and ``month`` query parameters."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_calendar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">today</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">localdate</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">year</span><span class="p">,</span> <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s2">"year"</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">[</span><span class="s2">"month"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">12</span> <span class="ow">and</span> <span class="mi">1900</span> <span class="o">&lt;=</span> <span class="n">year</span> <span class="o">&lt;=</span> <span class="mi">2200</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="n">year</span><span class="p">,</span> <span class="n">month</span> <span class="o">=</span> <span class="n">today</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">month</span>
+        <span class="k">return</span> <span class="n">month_grid</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">"calendar"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_calendar</span><span class="p">()</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">"today"</span><span class="p">]</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">localdate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+
+
+
+<div class="viewcode-block" id="HomeView">
+<a class="viewcode-back" href="../../api.html#breakfast.views.HomeView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HomeView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CalendarMixin</span><span class="p">,</span> <span class="n">TemplateView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">"breakfast/home.html"</span></div>
+
+
+
+<div class="viewcode-block" id="UserListView">
+<a class="viewcode-back" href="../../api.html#breakfast.views.UserListView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserListView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">ListView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">"breakfast/user_list.html"</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s2">"users"</span>
+    <span class="n">paginate_by</span> <span class="o">=</span> <span class="mi">50</span>
+
+<div class="viewcode-block" id="UserListView.get_queryset">
+<a class="viewcode-back" href="../../api.html#breakfast.views.UserListView.get_queryset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">"-points"</span><span class="p">,</span> <span class="s2">"username"</span><span class="p">)</span>
+        <span class="n">team</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"team"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">team</span><span class="o">=</span><span class="n">team</span><span class="p">)</span> <span class="k">if</span> <span class="n">team</span> <span class="k">else</span> <span class="n">queryset</span></div>
+
+
+<div class="viewcode-block" id="UserListView.get_context_data">
+<a class="viewcode-back" href="../../api.html#breakfast.views.UserListView.get_context_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">"teams"</span><span class="p">]</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">team</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s2">"team"</span><span class="p">)</span><span class="o">.</span><span class="n">values_list</span><span class="p">(</span><span class="s2">"team"</span><span class="p">,</span> <span class="n">flat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">"selected_team"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"team"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UserDetailView">
+<a class="viewcode-back" href="../../api.html#breakfast.views.UserDetailView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserDetailView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">DetailView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">"breakfast/user_detail.html"</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
+    <span class="n">context_object_name</span> <span class="o">=</span> <span class="s2">"profile"</span>
+
+<div class="viewcode-block" id="UserDetailView.get_context_data">
+<a class="viewcode-back" href="../../api.html#breakfast.views.UserDetailView.get_context_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_context_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_context_data</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">breakfast</span> <span class="ow">in</span> <span class="n">Breakfast</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">confirmed</span><span class="p">()</span><span class="o">.</span><span class="n">prefetch_related</span><span class="p">(</span><span class="s2">"hosts__user"</span><span class="p">,</span> <span class="s2">"absentees"</span><span class="p">):</span>
+            <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"breakfast"</span><span class="p">:</span> <span class="n">breakfast</span><span class="p">,</span>
+                    <span class="s2">"absentees"</span><span class="p">:</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">absentee_count</span><span class="p">,</span>
+                    <span class="s2">"participants"</span><span class="p">:</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">participant_count</span><span class="p">,</span>
+                    <span class="s2">"hosts"</span><span class="p">:</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">host_count</span><span class="p">,</span>
+                    <span class="s2">"points"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">breakfast</span><span class="o">.</span><span class="n">points</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="n">context</span><span class="p">[</span><span class="s2">"rows"</span><span class="p">]</span> <span class="o">=</span> <span class="n">rows</span>
+        <span class="k">return</span> <span class="n">context</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="NewBreakfastView">
+<a class="viewcode-back" href="../../api.html#breakfast.views.NewBreakfastView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NewBreakfastView</span><span class="p">(</span><span class="n">LoginRequiredMixin</span><span class="p">,</span> <span class="n">CalendarMixin</span><span class="p">,</span> <span class="n">TemplateView</span><span class="p">):</span>
+    <span class="n">template_name</span> <span class="o">=</span> <span class="s2">"breakfast/new.html"</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># JSON API</span>
+<span class="c1"># ---------------------------------------------------------------------------------------------------------------------</span>
+<div class="viewcode-block" id="ApiError">
+<a class="viewcode-back" href="../../api.html#breakfast.views.ApiError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ApiError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span></div>
+
+
+
+<div class="viewcode-block" id="draft_state">
+<a class="viewcode-back" href="../../api.html#breakfast.views.draft_state">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draft_state</span><span class="p">(</span><span class="n">breakfast</span><span class="p">:</span> <span class="n">Breakfast</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Everything the frontend needs to render a breakfast being prepared."""</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"token"</span><span class="p">:</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+        <span class="s2">"date"</span><span class="p">:</span> <span class="n">timezone</span><span class="o">.</span><span class="n">localtime</span><span class="p">(</span><span class="n">breakfast</span><span class="o">.</span><span class="n">date</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M"</span><span class="p">),</span>
+        <span class="s2">"include_optional_team"</span><span class="p">:</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">include_optional_team</span><span class="p">,</span>
+        <span class="s2">"confirmed"</span><span class="p">:</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">is_confirmed</span><span class="p">,</span>
+        <span class="s2">"possible_users"</span><span class="p">:</span> <span class="p">[</span><span class="n">user</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">possible_users</span><span class="p">],</span>
+        <span class="s2">"absentees"</span><span class="p">:</span> <span class="p">[</span><span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">absentees</span><span class="o">.</span><span class="n">all</span><span class="p">()],</span>
+        <span class="s2">"hosts"</span><span class="p">:</span> <span class="p">[</span><span class="n">host</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">hosts</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s2">"user"</span><span class="p">)],</span>
+        <span class="s2">"participant_count"</span><span class="p">:</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">participant_count</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="ApiView">
+<a class="viewcode-back" href="../../api.html#breakfast.views.ApiView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ApiView</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Base class: JSON in, JSON out, authentication errors reported as JSON rather than redirects."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">dispatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">"error"</span><span class="p">:</span> <span class="n">_</span><span class="p">(</span><span class="s2">"Authentication required."</span><span class="p">)},</span> <span class="n">status</span><span class="o">=</span><span class="mi">401</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dispatch</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ApiError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">({</span><span class="s2">"error"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)},</span> <span class="n">status</span><span class="o">=</span><span class="n">error</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">payload</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">body</span> <span class="ow">or</span> <span class="sa">b</span><span class="s2">"</span><span class="si">{}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"Invalid JSON."</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"Invalid JSON."</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<div class="viewcode-block" id="DraftCreateView">
+<a class="viewcode-back" href="../../api.html#breakfast.views.DraftCreateView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DraftCreateView</span><span class="p">(</span><span class="n">ApiView</span><span class="p">):</span>
+    <span class="n">http_method_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"post"</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">):</span>
+        <span class="n">tomorrow</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">localdate</span><span class="p">()</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">make_aware</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">tomorrow</span><span class="p">,</span> <span class="n">time</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">draft_state</span><span class="p">(</span><span class="n">services</span><span class="o">.</span><span class="n">create_draft</span><span class="p">(</span><span class="n">date</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="DraftUpdateView">
+<a class="viewcode-back" href="../../api.html#breakfast.views.DraftUpdateView">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DraftUpdateView</span><span class="p">(</span><span class="n">ApiView</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Apply the state sent by the page, then an optional action (``draw``, ``add_host`` or ``confirm``)."""</span>
+
+    <span class="n">http_method_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"post"</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">HttpRequest</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">breakfast</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Breakfast</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">is_confirmed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"This breakfast is already confirmed."</span><span class="p">),</span> <span class="n">status</span><span class="o">=</span><span class="mi">409</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"action"</span><span class="p">,</span> <span class="s2">"update"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"update"</span><span class="p">,</span> <span class="s2">"draw"</span><span class="p">,</span> <span class="s2">"add_host"</span><span class="p">,</span> <span class="s2">"confirm"</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"Unknown action."</span><span class="p">))</span>
+
+        <span class="k">with</span> <span class="n">transaction</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_state</span><span class="p">(</span><span class="n">breakfast</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">"draw"</span> <span class="ow">and</span> <span class="n">services</span><span class="o">.</span><span class="n">draw_host</span><span class="p">(</span><span class="n">breakfast</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"Nobody is left to host."</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">"add_host"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_host</span><span class="p">(</span><span class="n">breakfast</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"email"</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">"confirm"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">hosts</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"Choose at least one host before confirming."</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">"confirm"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">confirm</span><span class="p">(</span><span class="n">breakfast</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">JsonResponse</span><span class="p">(</span><span class="n">draft_state</span><span class="p">(</span><span class="n">breakfast</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_state</span><span class="p">(</span><span class="n">breakfast</span><span class="p">:</span> <span class="n">Breakfast</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">"date"</span><span class="p">]))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"Invalid date."</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+        <span class="k">if</span> <span class="n">timezone</span><span class="o">.</span><span class="n">is_naive</span><span class="p">(</span><span class="n">date</span><span class="p">):</span>
+            <span class="n">date</span> <span class="o">=</span> <span class="n">timezone</span><span class="o">.</span><span class="n">make_aware</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+        <span class="n">breakfast</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">date</span>
+        <span class="n">breakfast</span><span class="o">.</span><span class="n">include_optional_team</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"include_optional_team"</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+        <span class="n">breakfast</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="n">possible</span> <span class="o">=</span> <span class="p">{</span><span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">:</span> <span class="n">user</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">possible_users</span><span class="p">}</span>
+        <span class="n">absentees</span> <span class="o">=</span> <span class="p">{</span><span class="n">possible</span><span class="p">[</span><span class="n">email</span><span class="p">]</span> <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"absentees"</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">possible</span><span class="p">}</span>
+        <span class="n">breakfast</span><span class="o">.</span><span class="n">absentees</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">absentees</span><span class="p">)</span>
+
+        <span class="n">wanted</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">item</span><span class="p">[</span><span class="s2">"email"</span><span class="p">]:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"homemade"</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hosts"</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"email"</span><span class="p">)</span> <span class="ow">in</span> <span class="n">possible</span>
+        <span class="p">}</span>
+        <span class="n">wanted</span> <span class="o">=</span> <span class="p">{</span><span class="n">email</span><span class="p">:</span> <span class="n">homemade</span> <span class="k">for</span> <span class="n">email</span><span class="p">,</span> <span class="n">homemade</span> <span class="ow">in</span> <span class="n">wanted</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">possible</span><span class="p">[</span><span class="n">email</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">absentees</span><span class="p">}</span>
+        <span class="n">breakfast</span><span class="o">.</span><span class="n">hosts</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">user__email__in</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">wanted</span><span class="p">))</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">email</span><span class="p">,</span> <span class="n">homemade</span> <span class="ow">in</span> <span class="n">wanted</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">Host</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">update_or_create</span><span class="p">(</span><span class="n">breakfast</span><span class="o">=</span><span class="n">breakfast</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">possible</span><span class="p">[</span><span class="n">email</span><span class="p">],</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"homemade"</span><span class="p">:</span> <span class="n">homemade</span><span class="p">})</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_host</span><span class="p">(</span><span class="n">breakfast</span><span class="p">:</span> <span class="n">Breakfast</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">user</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">breakfast</span><span class="o">.</span><span class="n">participants</span> <span class="k">if</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">email</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s2">"This person cannot host this breakfast."</span><span class="p">))</span>
+        <span class="n">Host</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">breakfast</span><span class="o">=</span><span class="n">breakfast</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">confirm</span><span class="p">(</span><span class="n">breakfast</span><span class="p">:</span> <span class="n">Breakfast</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">services</span><span class="o">.</span><span class="n">refresh_points</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">send_notifications</span><span class="p">(</span><span class="n">breakfast</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># smtplib.SMTPException is an OSError subclass</span>
+            <span class="k">raise</span> <span class="n">ApiError</span><span class="p">(</span>
+                <span class="n">_</span><span class="p">(</span><span class="s2">"The notifications could not be sent: </span><span class="si">%(error)s</span><span class="s2">"</span><span class="p">)</span> <span class="o">%</span> <span class="p">{</span><span class="s2">"error"</span><span class="p">:</span> <span class="n">error</span><span class="p">},</span> <span class="n">status</span><span class="o">=</span><span class="mi">502</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+        <span class="n">services</span><span class="o">.</span><span class="n">confirm</span><span class="p">(</span><span class="n">breakfast</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021-2026, Adrien Ehrhardt.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
