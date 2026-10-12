@@ -1,0 +1,25 @@
+{% load i18n %}
+<section class="card" aria-labelledby="calendar-title">
+    <div class="calendar-head">
+        <a href="?year={{ calendar.previous.0 }}&amp;month={{ calendar.previous.1 }}" aria-label="{% translate 'Previous month' %}">‹</a>
+        <h2 id="calendar-title">{{ calendar.title }}</h2>
+        <a href="?year={{ calendar.next.0 }}&amp;month={{ calendar.next.1 }}" aria-label="{% translate 'Next month' %}">›</a>
+    </div>
+    <table class="calendar">
+        <thead><tr>{% for name in calendar.weekdays %}<th scope="col">{{ name }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for week in calendar.weeks %}
+        <tr>
+            {% for day in week %}
+            <td class="{% if not day.in_month %}outside{% endif %}{% if day.date == today %} today{% endif %}">
+                <span class="day">{{ day.date.day }}</span>
+                {% for hosts in day.breakfasts %}
+                <ul class="hosts">{% for name in hosts %}<li>{{ name }}</li>{% endfor %}</ul>
+                {% endfor %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>

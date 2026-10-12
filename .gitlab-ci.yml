@@ -1,6 +1,6 @@
 .common_python: &common_python
   image:
-    name: ${DOCKER_REGISTRY}python:3.8.13-alpine3.16
+    name: ${DOCKER_REGISTRY}python:3.13-slim
 
 .ci_tools: &ci_tools
   image:
@@ -8,10 +8,8 @@
 
 variables:
   CURRENT_TAG: "$CURRENT_TAG"
-  WORKON_HOME: "$CI_PROJECT_DIR/.cache/venvs"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-  PIPENV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pipenv"
-  PIPENV_PIPFILE: "$CI_PROJECT_DIR/CBO/Pipfile"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
 
 .common_tag: &common_tag
   tags:
@@ -38,16 +36,14 @@ variables:
   cache:
     paths:
       - .cache/pip
-      - .cache/pipenv
-      - .cache/venvs
+      - .cache/uv
     policy: pull-push
 
 .pull_cache: &pull_cache
   cache:
     paths:
       - .cache/pip
-      - .cache/pipenv
-      - .cache/venvs
+      - .cache/uv
     policy: pull
 
 stages:
@@ -69,25 +65,26 @@ lint:
   <<: *common_python
   <<: *common_tag
   script:
-    - cd CBO
-    - pip install flake8
-    # stop the build if there are Python syntax errors or undefined names
-    - flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-    # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    - flake8 --ignore=W504 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+    - pip install uv
+    - uv sync --frozen
+    - uv run ruff check .
+    - uv run ruff format --check .
   only:
     refs:
       - branches
     changes:
       - .gitlab-ci.yml
-      - CBO/**/*
+      - cbo/**/*
+      - breakfast/**/*
+      - templates/**/*
+      - pyproject.toml
+      - uv.lock
+      - Dockerfile
 
 generate_tag:
   artifacts:
     paths:
       - build.env
-      - CBO/Pipfile
-      - CBO/Pipfile.lock
   stage: versionning
   <<: *global_cache
   <<: *common_python
@@ -95,11 +92,7 @@ generate_tag:
   only:
    - master
   script:
-    - apk --update add --no-cache libpq-dev gcc gfortran build-base wget libpng-dev openblas-dev linux-headers
-    - sed -i 's|${PYPI_REMOTE}|'${PYPI_REMOTE}'|g' CBO/Pipfile
-    - pipenv install --skip-lock
-    - pipenv graph
-    - echo export APPLICATION_TAG_VERSION=`pipenv run python -c 'import CBO; print(CBO.__version__)'` >> build.env
+    - echo export APPLICATION_TAG_VERSION=$(sed -n 's/^__version__ = "\(.*\)"/\1/p' cbo/__init__.py) >> build.env
   timeout: 5h
 
 test:
@@ -112,18 +105,23 @@ test:
   <<: *common_tag
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
-    - pip install pipenv
-    - apt update && apt -y install libpq-dev g++ libc-dev linux-headers
-    - pipenv install -d --skip-lock
-    - pipenv run coverage run --source CBO/ -m pytest
-    - pipenv run coverage report
-    - pipenv run coverage xml
+    - pip install uv
+    - uv sync --frozen
+    - uv run python scripts/compile_messages.py
+    - uv run coverage run -m pytest
+    - uv run coverage report
+    - uv run coverage xml
   only:
     refs:
       - branches
     changes:
       - .gitlab-ci.yml
-      - CBO/**/*
+      - cbo/**/*
+      - breakfast/**/*
+      - templates/**/*
+      - pyproject.toml
+      - uv.lock
+      - Dockerfile
       - tests/**/*
 
 security:
@@ -132,14 +130,20 @@ security:
   <<: *common_python
   <<: *common_tag
   script:
-  - pip install pipenv
-  - pipenv run bandit -r CBO
+  - pip install uv
+  - uv sync --frozen
+  - uv run bandit -q -r cbo breakfast
   only:
     refs:
       - branches
     changes:
       - .gitlab-ci.yml
-      - CBO/**/*
+      - cbo/**/*
+      - breakfast/**/*
+      - templates/**/*
+      - pyproject.toml
+      - uv.lock
+      - Dockerfile
   timeout: 2h
 
 quality_check:
@@ -168,11 +172,10 @@ document:
   <<: *common_tag
   script:
     - . ./build.env
-    - pip install pipenv
-    - apk --update add --no-cache make libpq-dev g++ git libc-dev linux-headers
+    - pip install uv
+    - apt-get update && apt-get install -y --no-install-recommends make git
+    - uv run --frozen --group docs make -C docs clean html
     - cd docs
-    - pipenv run make clean
-    - pipenv run make html
     - git config --global http.sslverify false
     - git config --global user.name "$GITLAB_USER_NAME"
     - git config --global user.email "$GITLAB_USER_EMAIL"
@@ -198,7 +201,12 @@ document:
       - branches
     changes:
       - .gitlab-ci.yml
-      - CBO/**/*
+      - cbo/**/*
+      - breakfast/**/*
+      - templates/**/*
+      - pyproject.toml
+      - uv.lock
+      - Dockerfile
       - docs/**/*
 
 build CBO:
@@ -209,7 +217,6 @@ build CBO:
     entrypoint: [""]
   script:
     - . ./build.env
-    - cd CBO
     - mkdir -p /kaniko/.docker
     - |-
        KANIKOPROXYBUILDARGS=""
@@ -227,7 +234,12 @@ build CBO:
       - master
     changes:
       - .gitlab-ci.yml
-      - CBO/**/*
+      - cbo/**/*
+      - breakfast/**/*
+      - templates/**/*
+      - pyproject.toml
+      - uv.lock
+      - Dockerfile
 
 deploy_dev:
   stage: deploy_dev

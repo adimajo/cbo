@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Sign in" %}{% endblock %}
+
+{% block content %}
+<section class="card narrow">
+    <h1>{% translate "Sign in" %}</h1>
+
+    {% if form.errors %}<p class="error">{% translate "Your username and password didn't match. Please try again." %}</p>{% endif %}
+    {% if next %}
+        {% if user.is_authenticated %}
+        <p>{% translate "Your account doesn't have access to this page. To proceed, please sign in with an account that has access." %}</p>
+        {% else %}
+        <p>{% translate "Please sign in to see this page." %}</p>
+        {% endif %}
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}" class="stack">
+        {% csrf_token %}
+        <label>{% translate "Username" %}
+            <input type="text" name="username" autocomplete="username" autofocus required>
+        </label>
+        <label>{% translate "Password" %}
+            <input type="password" name="password" autocomplete="current-password" required>
+        </label>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="primary">{% translate "Sign in" %}</button>
+    </form>
+</section>
+{% endblock %}

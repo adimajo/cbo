@@ -1,0 +1,465 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: cbo 2.0.0\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/base.html
+msgid "Breakfast, by CBO"
+msgstr "Petit-déjeuner, par CBO"
+
+#: templates/base.html
+msgid "Main navigation"
+msgstr "Navigation principale"
+
+#: templates/base.html
+msgid "Home"
+msgstr "Accueil"
+
+#: templates/base.html breakfast/templates/breakfast/user_list.html
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: templates/base.html breakfast/templates/breakfast/new.html
+msgid "New breakfast"
+msgstr "Nouveau petit-déjeuner"
+
+#: templates/base.html
+msgid "Administration"
+msgstr "Administration"
+
+#: templates/base.html
+msgid "Language"
+msgstr "Langue"
+
+#: templates/base.html
+msgid "Sign out"
+msgstr "Se déconnecter"
+
+#: templates/base.html
+msgid "Contact"
+msgstr "Contact"
+
+#: templates/base.html
+msgid "Source code"
+msgstr "Code source"
+
+#: templates/base.html
+msgid "Signed in as %(name)s"
+msgstr "Connecté en tant que %(name)s"
+
+#: templates/registration/login.html
+msgid "Sign in"
+msgstr "Se connecter"
+
+#: templates/registration/login.html
+msgid "Your username and password didn't match. Please try again."
+msgstr ""
+"Votre nom d'utilisateur et votre mot de passe ne correspondent pas. Veuillez"
+" réessayer."
+
+#: templates/registration/login.html
+msgid ""
+"Your account doesn't have access to this page. To proceed, please sign in "
+"with an account that has access."
+msgstr ""
+"Votre compte n'a pas accès à cette page. Pour continuer, veuillez vous "
+"connecter avec un compte qui y a accès."
+
+#: templates/registration/login.html
+msgid "Please sign in to see this page."
+msgstr "Veuillez vous connecter pour voir cette page."
+
+#: templates/registration/login.html
+#: breakfast/templates/breakfast/user_list.html
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: templates/registration/login.html
+msgid "Password"
+msgstr "Mot de passe"
+
+#: breakfast/templates/breakfast/_calendar.html
+msgid "Previous month"
+msgstr "Mois précédent"
+
+#: breakfast/templates/breakfast/_calendar.html
+msgid "Next month"
+msgstr "Mois suivant"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Breakfast date"
+msgstr "Date du petit-déjeuner"
+
+#: breakfast/templates/breakfast/new.html
+msgid "expected participants"
+msgstr "participants attendus"
+
+#: breakfast/templates/breakfast/new.html
+#: breakfast/templates/breakfast/user_detail.html
+msgid "Absentees"
+msgstr "Absents"
+
+#: breakfast/templates/breakfast/new.html
+#: breakfast/templates/breakfast/user_detail.html
+msgid "Hosts"
+msgstr "Organisateurs"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Nobody yet. Draw one or pick someone."
+msgstr "Personne pour l'instant. Tirez au sort ou choisissez quelqu'un."
+
+#: breakfast/templates/breakfast/new.html
+msgid "Draw a host"
+msgstr "Tirer un organisateur au sort"
+
+#: breakfast/templates/breakfast/new.html
+msgid "or"
+msgstr "ou"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Choose a host"
+msgstr "Choisir un organisateur"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Add"
+msgstr "Ajouter"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Organise another breakfast"
+msgstr "Organiser un autre petit-déjeuner"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Confirm and notify"
+msgstr "Confirmer et notifier"
+
+#: breakfast/templates/breakfast/new.html
+msgid "JavaScript is required to organise a breakfast."
+msgstr "JavaScript est nécessaire pour organiser un petit-déjeuner."
+
+#: breakfast/templates/breakfast/new.html
+msgid "Saving…"
+msgstr "Enregistrement…"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Saved."
+msgstr "Enregistré."
+
+#: breakfast/templates/breakfast/new.html
+msgid "Confirmed: notifications have been sent."
+msgstr "Confirmé : les notifications ont été envoyées."
+
+#: breakfast/templates/breakfast/new.html
+msgid "Remove"
+msgstr "Retirer"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Home-made"
+msgstr "Fait maison"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Choose a host…"
+msgstr "Choisir un organisateur…"
+
+#: breakfast/templates/breakfast/new.html
+msgid "Something went wrong."
+msgstr "Une erreur s'est produite."
+
+#: breakfast/templates/breakfast/new.html
+msgid "The %(optional_team)s team takes part"
+msgstr "L'équipe %(optional_team)s participe"
+
+#: breakfast/templates/breakfast/_pagination.html
+msgid "Pagination"
+msgstr "Pagination"
+
+#: breakfast/templates/breakfast/_pagination.html
+msgid "Page %(number)s of %(total)s"
+msgstr "Page %(number)s sur %(total)s"
+
+#: breakfast/templates/breakfast/user_detail.html
+#: breakfast/templates/breakfast/user_list.html
+msgid "Email"
+msgstr "E-mail"
+
+#: breakfast/templates/breakfast/user_detail.html
+msgid "Arrival date"
+msgstr "Date d'arrivée"
+
+#: breakfast/templates/breakfast/user_detail.html
+#: breakfast/templates/breakfast/user_list.html
+msgid "Team"
+msgstr "Équipe"
+
+#: breakfast/templates/breakfast/user_detail.html
+#: breakfast/templates/breakfast/user_list.html
+msgid "Points"
+msgstr "Points"
+
+#: breakfast/templates/breakfast/user_detail.html
+msgid "Breakfasts"
+msgstr "Petits-déjeuners"
+
+#: breakfast/templates/breakfast/user_detail.html
+msgid "Date"
+msgstr "Date"
+
+#: breakfast/templates/breakfast/user_detail.html
+msgid "Participants"
+msgstr "Participants"
+
+#: breakfast/templates/breakfast/user_detail.html
+msgid "Points earned"
+msgstr "Points gagnés"
+
+#: breakfast/templates/breakfast/user_detail.html
+msgid "No breakfast yet."
+msgstr "Aucun petit-déjeuner pour le moment."
+
+#: breakfast/templates/breakfast/user_list.html
+msgid "All teams"
+msgstr "Toutes les équipes"
+
+#: breakfast/templates/breakfast/user_list.html
+msgid "Filter"
+msgstr "Filtrer"
+
+#: breakfast/templates/breakfast/user_list.html
+msgid "No users."
+msgstr "Aucun utilisateur."
+
+#: breakfast/templates/breakfast/home.html
+msgid "Welcome to CBO, the Chief Breakfast Officer."
+msgstr "Bienvenue sur CBO, le Chief Breakfast Officer."
+
+#: breakfast/templates/breakfast/home.html
+msgid "Organise a breakfast"
+msgstr "Organiser un petit-déjeuner"
+
+#: breakfast/templates/breakfast/home.html
+msgid "Hello %(name)s!"
+msgstr "Bonjour %(name)s !"
+
+#: breakfast/models.py
+msgid "arrival date"
+msgstr "date d'arrivée"
+
+#: breakfast/models.py
+msgid "departure date"
+msgstr "date de départ"
+
+#: breakfast/models.py
+msgid "biography"
+msgstr "biographie"
+
+#: breakfast/models.py
+msgid "specialty"
+msgstr "spécialité"
+
+#: breakfast/models.py
+msgid "team"
+msgstr "équipe"
+
+#: breakfast/models.py
+msgid "points"
+msgstr "points"
+
+#: breakfast/models.py
+msgid "creation date"
+msgstr "date de création"
+
+#: breakfast/models.py
+msgid "last update"
+msgstr "dernière mise à jour"
+
+#: breakfast/models.py
+msgid "breakfast date"
+msgstr "date du petit-déjeuner"
+
+#: breakfast/models.py
+msgid "token"
+msgstr "jeton"
+
+#: breakfast/models.py
+msgid "confirmed at"
+msgstr "confirmé le"
+
+#: breakfast/models.py
+msgid "optional team takes part"
+msgstr "l'équipe optionnelle participe"
+
+#: breakfast/models.py
+msgid "breakfast"
+msgstr "petit-déjeuner"
+
+#: breakfast/models.py
+msgid "breakfasts"
+msgstr "petits-déjeuners"
+
+#: breakfast/models.py
+msgid "home-made"
+msgstr "fait maison"
+
+#: breakfast/models.py
+msgid "host"
+msgstr "organisateur"
+
+#: breakfast/models.py
+msgid "hosts"
+msgstr "organisateurs"
+
+#: breakfast/models.py
+msgid "point adjustment (user)"
+msgstr "ajustement de points (utilisateur)"
+
+#: breakfast/models.py
+msgid "point adjustments (user)"
+msgstr "ajustements de points (utilisateur)"
+
+#: breakfast/models.py
+msgid "point adjustment (everyone)"
+msgstr "ajustement de points (tout le monde)"
+
+#: breakfast/models.py
+msgid "point adjustments (everyone)"
+msgstr "ajustements de points (tout le monde)"
+
+#: breakfast/models.py
+msgid ""
+"Balance, recomputed from the confirmed breakfasts. Low balances are drawn "
+"first."
+msgstr ""
+"Solde, recalculé à partir des petits-déjeuners confirmés. Les soldes les "
+"plus bas sont tirés en premier."
+
+#: breakfast/models.py
+msgid ""
+"Set once the notifications were sent. Only confirmed breakfasts count "
+"towards points."
+msgstr ""
+"Renseigné une fois les notifications envoyées. Seuls les petits-déjeuners "
+"confirmés comptent dans les points."
+
+#: breakfast/models.py
+msgid "absentees"
+msgstr "absents"
+
+#: breakfast/models.py
+msgid "user"
+msgstr "utilisateur"
+
+#: breakfast/admin.py
+msgid "Breakfast"
+msgstr "Petit-déjeuner"
+
+#: breakfast/notifications.py
+msgid "Breakfast on %(date)s"
+msgstr "Petit-déjeuner du %(date)s"
+
+#: breakfast/notifications.py
+msgid ""
+"Hello,\n"
+"\n"
+"You have been chosen to host the breakfast taking place on:\n"
+"\t%(date)s\n"
+"\n"
+"The number of participants expected per host is %(per_host)d.\n"
+"If you can prepare home-made food, you will earn bonus points!\n"
+"\n"
+"Kind regards,\n"
+"Chief Breakfast Officer"
+msgstr ""
+"Bonjour,\n"
+"\n"
+"Vous avez été désigné(e) comme organisateur du petit-déjeuner qui aura lieu le :\n"
+"\t%(date)s\n"
+"\n"
+"Le nombre de participants attendus par organisateur est de %(per_host)d.\n"
+"Si vous pouvez préparer des plats faits maison, vous obtiendrez des points bonus !\n"
+"\n"
+"Bien cordialement,\n"
+"Chief Breakfast Officer"
+
+#: breakfast/notifications.py
+msgid ""
+"Hello,\n"
+"\n"
+"You are invited to the breakfast taking place on:\n"
+"\t%(date)s\n"
+"\n"
+"For your information, the hosts are:%(hosts)s\n"
+"\n"
+"The leaderboard now reads:\n"
+"Few points:%(lowest)s\n"
+"Many points:%(highest)s\n"
+"\n"
+"CBO"
+msgstr ""
+"Bonjour,\n"
+"\n"
+"Vous êtes convié(e) au petit-déjeuner qui aura lieu le :\n"
+"\t%(date)s\n"
+"\n"
+"Pour information, les organisateurs désignés sont :%(hosts)s\n"
+"\n"
+"Le tableau des scores devient :\n"
+"Peu de points :%(lowest)s\n"
+"Beaucoup de points :%(highest)s\n"
+"\n"
+"CBO"
+
+#: breakfast/notifications.py
+msgid "Two days left to prepare some home-made food"
+msgstr "Plus que deux jours pour préparer des petits plats"
+
+#: breakfast/notifications.py
+msgid "The breakfast takes place tomorrow"
+msgstr "Le petit-déjeuner a lieu demain"
+
+#: breakfast/views.py
+msgid "Invalid JSON."
+msgstr "JSON invalide."
+
+#: breakfast/views.py
+msgid "This breakfast is already confirmed."
+msgstr "Ce petit-déjeuner est déjà confirmé."
+
+#: breakfast/views.py
+msgid "Unknown action."
+msgstr "Action inconnue."
+
+#: breakfast/views.py
+msgid "This person cannot host this breakfast."
+msgstr "Cette personne ne peut pas organiser ce petit-déjeuner."
+
+#: breakfast/views.py
+msgid "Authentication required."
+msgstr "Authentification requise."
+
+#: breakfast/views.py
+msgid "Nobody is left to host."
+msgstr "Plus personne n'est disponible pour organiser."
+
+#: breakfast/views.py
+msgid "Choose at least one host before confirming."
+msgstr "Choisissez au moins un organisateur avant de confirmer."
+
+#: breakfast/views.py
+msgid "Invalid date."
+msgstr "Date invalide."
+
+#: breakfast/views.py
+msgid "The notifications could not be sent: %(error)s"
+msgstr "Les notifications n'ont pas pu être envoyées : %(error)s"
+
+#: cbo/settings.py
+msgid "English"
+msgstr "Anglais"
+
+#: cbo/settings.py
+msgid "French"
+msgstr "Français"

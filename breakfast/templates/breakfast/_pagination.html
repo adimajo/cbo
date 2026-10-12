@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if is_paginated %}
+<nav class="pagination" aria-label="{% translate 'Pagination' %}">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if selected_team %}&team={{ selected_team|urlencode }}{% endif %}">‹</a>{% endif %}
+    <span>{% blocktranslate with number=page_obj.number total=paginator.num_pages %}Page {{ number }} of {{ total }}{% endblocktranslate %}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if selected_team %}&team={{ selected_team|urlencode }}{% endif %}">›</a>{% endif %}
+</nav>
+{% endif %}

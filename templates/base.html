@@ -1,0 +1,55 @@
+{% load i18n static %}{% get_current_language as LANGUAGE_CODE %}{% get_available_languages as LANGUAGES %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>{% block title %}{% translate "Breakfast, by CBO" %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'breakfast/style.css' %}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+<header class="site-header">
+    <a class="brand" href="{% url 'home' %}"><span aria-hidden="true">☕</span> CBO</a>
+    {% if user.is_authenticated %}
+    <nav aria-label="{% translate 'Main navigation' %}">
+        <a href="{% url 'home' %}">{% translate "Home" %}</a>
+        <a href="{% url 'breakfast:users' %}">{% translate "Users" %}</a>
+        <a href="{% url 'breakfast:new' %}">{% translate "New breakfast" %}</a>
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}">{% translate "Administration" %}</a>{% endif %}
+    </nav>
+    {% endif %}
+    <div class="session">
+        <form class="lang" action="{% url 'set_language' %}" method="post" aria-label="{% translate 'Language' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            {% for code, name in LANGUAGES %}
+            {% get_language_info for code as info %}
+            <button type="submit" name="language" value="{{ code }}" lang="{{ code }}" title="{{ info.name_local|capfirst }}"
+                    {% if code == LANGUAGE_CODE %}aria-current="true"{% endif %}>{{ code|upper }}</button>
+            {% endfor %}
+        </form>
+        {% if user.is_authenticated %}
+        <span class="who">{% blocktranslate with name=user.username %}Signed in as {{ name }}{% endblocktranslate %}</span>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="link">{% translate "Sign out" %}</button>
+        </form>
+        {% endif %}
+    </div>
+</header>
+
+<main>
+    {% if messages %}
+    <ul class="messages">{% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    <a href="mailto:{{ admin_email }}">{% translate "Contact" %}</a>
+    <span>·</span>
+    <a href="https://github.com/adimajo/cbo">{% translate "Source code" %}</a>
+</footer>
+</body>
+</html>
